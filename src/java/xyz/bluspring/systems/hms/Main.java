@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import xyz.bluspring.systems.hms.auth.Account;
+import xyz.bluspring.systems.hms.auth.AuthLog;
+
 public class Main {
     public static final boolean IS_TESTING = false;
 
@@ -68,6 +71,8 @@ public class Main {
         });
 
         // Initialize data classes, just to make sure that their serializers are registered first.
+        Account.init();
+        AuthLog.init();
         // TODO
 
         if (IS_TESTING) { // Add testing data
