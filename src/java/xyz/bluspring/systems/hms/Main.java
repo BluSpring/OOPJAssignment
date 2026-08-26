@@ -76,6 +76,7 @@ public class Main {
         // TODO
 
         if (IS_TESTING) { // Add testing data
+            System.out.println("Testing data enabled!");
             // TODO
         }
 
