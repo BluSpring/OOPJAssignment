@@ -75,13 +75,13 @@ public class Main {
             // TODO
         }
         // I will comment this out in the next one..just testing if everything is working from my side or not.
-        var manager = new xyz.bluspring.systems.hms.role.manager.MedicalManager();
+       /* var manager = new xyz.bluspring.systems.hms.role.manager.MedicalManager();
 
         window.getContentPane().setLayout(new java.awt.BorderLayout());
 
         window.getContentPane().add(manager.createDashboardUI(), java.awt.BorderLayout.CENTER);
 
-        resetSizesToSmallWindow();
+        resetSizesToSmallWindow(); */
 
         window.setVisible(true);
     }
