@@ -1,11 +1,6 @@
 package xyz.bluspring.systems.hms;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -79,6 +74,14 @@ public class Main {
             System.out.println("Testing data enabled!");
             // TODO
         }
+        // I will comment this out in the next one..just testing if everything is working from my side or not.
+        var manager = new xyz.bluspring.systems.hms.role.manager.MedicalManager();
+
+        window.getContentPane().setLayout(new java.awt.BorderLayout());
+
+        window.getContentPane().add(manager.createDashboardUI(), java.awt.BorderLayout.CENTER);
+
+        resetSizesToSmallWindow();
 
         window.setVisible(true);
     }
