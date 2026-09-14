@@ -1,0 +1,332 @@
+<html>
+<head>
+    <title>DataSerializers.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .s0 {
+            color: #cf8e6d;
+        }
+
+        .s1 {
+            color: #bcbec4;
+        }
+
+        .s2 {
+            color: #bcbec4;
+        }
+
+        .s3 {
+            color: #6aab73;
+        }
+
+        .s4 {
+            color: #7a7e85;
+        }
+
+        .s5 {
+            color: #2aacb8;
+        }
+    </style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060">
+    <tr>
+        <td>
+            <center>
+                <font face="Arial, Helvetica" color="#000000">
+                    DataSerializers.java</font>
+            </center>
+        </td>
+    </tr>
+</table>
+<pre><span class="s0">package </span><span class="s1">xyz</span><span class="s2">.</span><span
+    class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span class="s2">.</span><span
+    class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span class="s2">.</span><span
+    class="s1">data</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span
+        class="s2">.</span><span class="s1">File</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span
+        class="s2">.</span><span class="s1">FileOutputStream</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span
+        class="s2">.</span><span class="s1">OutputStreamWriter</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span
+        class="s2">.</span><span class="s1">charset</span><span class="s2">.</span><span
+        class="s1">StandardCharsets</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span
+        class="s2">.</span><span class="s1">file</span><span class="s2">.</span><span class="s1">Files</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">HashMap</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">Map</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">DataSerializers </span><span class="s2">{</span>
+    <span class="s0">private static final </span><span class="s1">Map</span><span class="s2">&lt;</span><span
+        class="s1">String</span><span class="s2">, </span><span class="s1">DataSerializer</span><span class="s2">&lt;?&gt;&gt; </span><span
+        class="s1">serializers </span><span class="s2">= </span><span class="s0">new </span><span
+        class="s1">HashMap</span><span class="s2">&lt;&gt;();</span>
+
+    <span class="s0">public static </span><span class="s1">DataSerializer</span><span class="s2">&lt;?&gt; </span><span
+        class="s1">register</span><span class="s2">(</span><span class="s1">String name</span><span class="s2">, </span><span
+        class="s1">DataSerializer</span><span class="s2">&lt;?&gt; </span><span class="s1">serializer</span><span
+        class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">serializers</span><span class="s2">.</span><span
+        class="s1">put</span><span class="s2">(</span><span class="s1">name</span><span class="s2">, </span><span
+        class="s1">serializer</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s1">DataSerializer</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">getSerializer</span><span
+        class="s2">(</span><span class="s1">String name</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s2">(</span><span class="s1">DataSerializer</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt;) </span><span class="s1">serializers</span><span
+        class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">name</span><span
+        class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s1">String getSerializerName</span><span class="s2">(</span><span
+        class="s1">DataSerializer</span><span class="s2">&lt;?&gt; </span><span class="s1">serializer</span><span
+        class="s2">) {</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">String key </span><span
+        class="s2">: </span><span class="s1">serializers</span><span class="s2">.</span><span
+        class="s1">keySet</span><span class="s2">()) {</span>
+            <span class="s1">var other </span><span class="s2">= </span><span class="s1">serializers</span><span
+        class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">key</span><span
+        class="s2">);</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">other </span><span
+        class="s2">== </span><span class="s1">serializer</span><span class="s2">) {</span>
+                <span class="s0">return </span><span class="s1">key</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return null</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s1">DataSerializer</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">getSerializerFor</span><span
+        class="s2">(</span><span class="s1">Class</span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s1">clazz</span><span class="s2">) {</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">DataSerializer</span><span class="s2">&lt;?&gt; </span><span
+        class="s1">serializer </span><span class="s2">: </span><span class="s1">serializers</span><span
+        class="s2">.</span><span class="s1">values</span><span class="s2">()) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">serializer</span><span
+        class="s2">.</span><span class="s1">getSerializableClass</span><span class="s2">() == </span><span class="s0">null</span><span
+        class="s2">) {</span>
+                <span class="s0">continue</span><span class="s2">;</span>
+            <span class="s2">}</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">serializer</span><span
+        class="s2">.</span><span class="s1">getSerializableClass</span><span class="s2">().</span><span class="s1">isAssignableFrom</span><span
+        class="s2">(</span><span class="s1">clazz</span><span class="s2">)) {</span>
+                <span class="s0">return </span><span class="s2">(</span><span class="s1">DataSerializer</span><span
+        class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt;) </span><span
+        class="s1">serializer</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return null</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s0">void </span><span class="s1">serializeValues</span><span
+        class="s2">(</span><span class="s1">Class</span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s1">serializable</span><span class="s2">, </span><span
+        class="s1">File file</span><span class="s2">, </span><span class="s1">List</span><span
+        class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; </span><span class="s1">list</span><span
+        class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">var serializer </span><span class="s2">= </span><span
+        class="s1">getSerializerFor</span><span class="s2">(</span><span class="s1">serializable</span><span class="s2">);</span>
+
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">file</span><span
+        class="s2">.</span><span class="s1">exists</span><span class="s2">()) {</span>
+                <span class="s1">file</span><span class="s2">.</span><span class="s1">createNewFile</span><span
+        class="s2">();</span>
+            <span class="s2">}</span>
+
+            <span class="s1">var lines </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span
+        class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt;();</span>
+
+            <span class="s0">for </span><span class="s2">(</span><span class="s1">T value </span><span
+        class="s2">: </span><span class="s1">list</span><span class="s2">) {</span>
+                <span class="s1">lines</span><span class="s2">.</span><span class="s1">add</span><span
+        class="s2">(</span><span class="s1">serializer</span><span class="s2">.</span><span
+        class="s1">serialize</span><span class="s2">(</span><span class="s1">value</span><span class="s2">));</span>
+            <span class="s2">}</span>
+
+            <span class="s0">try </span><span class="s2">(</span><span class="s1">FileOutputStream stream </span><span
+        class="s2">= </span><span class="s0">new </span><span class="s1">FileOutputStream</span><span
+        class="s2">(</span><span class="s1">file</span><span class="s2">)) {</span>
+                <span class="s0">try </span><span class="s2">(</span><span
+        class="s1">OutputStreamWriter streamWriter </span><span class="s2">= </span><span class="s0">new </span><span
+        class="s1">OutputStreamWriter</span><span class="s2">(</span><span class="s1">stream</span><span
+        class="s2">, </span><span class="s1">StandardCharsets</span><span class="s2">.</span><span
+        class="s1">UTF_8</span><span class="s2">)) {</span>
+                    <span class="s0">for </span><span class="s2">(</span><span class="s1">String line </span><span
+        class="s2">: </span><span class="s1">lines</span><span class="s2">) {</span>
+                        <span class="s1">streamWriter</span><span class="s2">.</span><span class="s1">write</span><span
+        class="s2">(</span><span class="s1">line</span><span class="s2">);</span>
+                        <span class="s1">streamWriter</span><span class="s2">.</span><span class="s1">write</span><span
+        class="s2">(</span><span class="s3">'</span><span class="s0">\n</span><span class="s3">'</span><span class="s2">);</span>
+                    <span class="s2">}</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span
+        class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span
+        class="s1">e</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s0">void </span><span class="s1">deserializeLines</span><span
+        class="s2">(</span><span class="s1">Class</span><span class="s2">&lt;</span><span class="s1">T</span><span
+        class="s2">&gt; </span><span class="s1">serializable</span><span class="s2">, </span><span
+        class="s1">File file</span><span class="s2">, </span><span class="s1">List</span><span
+        class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; </span><span class="s1">list</span><span
+        class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">file</span><span
+        class="s2">.</span><span class="s1">exists</span><span class="s2">()) {</span>
+                <span class="s1">var serializer </span><span class="s2">= </span><span
+        class="s1">getSerializerFor</span><span class="s2">(</span><span class="s1">serializable</span><span class="s2">);</span>
+                <span class="s1">var lines </span><span class="s2">= </span><span class="s1">Files</span><span
+        class="s2">.</span><span class="s1">readAllLines</span><span class="s2">(</span><span
+        class="s1">file</span><span class="s2">.</span><span class="s1">toPath</span><span class="s2">(), </span><span
+        class="s1">StandardCharsets</span><span class="s2">.</span><span class="s1">UTF_8</span><span
+        class="s2">);</span>
+
+                <span class="s0">for </span><span class="s2">(</span><span class="s1">String line </span><span
+        class="s2">: </span><span class="s1">lines</span><span class="s2">) {</span>
+                    <span class="s1">list</span><span class="s2">.</span><span class="s1">add</span><span
+        class="s2">(</span><span class="s1">serializer</span><span class="s2">.</span><span
+        class="s1">deserialize</span><span class="s2">(</span><span class="s1">line</span><span class="s2">));</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span
+        class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span
+        class="s1">e</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private static final </span><span class="s1">String SEGMENT_DELIMITER </span><span
+        class="s2">= </span><span class="s3">&quot;, &quot;</span><span class="s2">;</span>
+    <span class="s0">private static final char </span><span class="s1">SEGMENT_CONTAINER </span><span
+        class="s2">= </span><span class="s3">'&quot;'</span><span class="s2">;</span>
+
+    <span class="s4">// Allows reading lines in a format of &quot;segment 1&quot;&quot;segment2&quot; without worrying about any characters causing breakage to the system.</span>
+    <span class="s4">// Additionally, almost any character can be within these segments, allowing for delimiters.</span>
+    <span class="s0">public static </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span
+        class="s2">&gt; </span><span class="s1">readSegmentedLine</span><span class="s2">(</span><span class="s1">String line</span><span
+        class="s2">) {</span>
+        <span class="s1">var segments </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span
+        class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt;();</span>
+        <span class="s1">var stringBuilder </span><span class="s2">= </span><span class="s0">new </span><span
+        class="s1">StringBuilder</span><span class="s2">();</span>
+
+        <span class="s0">boolean </span><span class="s1">isInSegment </span><span class="s2">= </span><span class="s0">false</span><span
+        class="s2">;</span>
+        <span class="s0">boolean </span><span class="s1">isInEscape </span><span class="s2">= </span><span class="s0">false</span><span
+        class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">var i </span><span
+        class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span
+        class="s2">&lt; </span><span class="s1">line</span><span class="s2">.</span><span class="s1">length</span><span
+        class="s2">(); </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">var c </span><span class="s2">= </span><span class="s1">line</span><span
+        class="s2">.</span><span class="s1">charAt</span><span class="s2">(</span><span class="s1">i</span><span
+        class="s2">);</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">c </span><span
+        class="s2">== </span><span class="s3">'</span><span class="s0">\\</span><span class="s3">' </span><span
+        class="s2">&amp;&amp; !</span><span class="s1">isInEscape</span><span class="s2">) {</span>
+                <span class="s1">isInEscape </span><span class="s2">= </span><span class="s0">true</span><span
+        class="s2">;</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">isInEscape</span><span
+        class="s2">) {</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">isInSegment</span><span class="s2">) {</span>
+                    <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span><span class="s1">c</span><span class="s2">);</span>
+                    <span class="s1">isInEscape </span><span class="s2">= </span><span class="s0">false</span><span
+        class="s2">;</span>
+                <span class="s2">}</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span
+        class="s1">c </span><span class="s2">== </span><span class="s1">SEGMENT_CONTAINER</span><span
+        class="s2">) {</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">isInSegment</span><span class="s2">) {</span>
+                    <span class="s1">isInSegment </span><span class="s2">= </span><span class="s0">false</span><span
+        class="s2">;</span>
+                    <span class="s1">segments</span><span class="s2">.</span><span class="s1">add</span><span
+        class="s2">(</span><span class="s1">stringBuilder</span><span class="s2">.</span><span
+        class="s1">toString</span><span class="s2">());</span>
+                    <span class="s1">stringBuilder </span><span class="s2">= </span><span class="s0">new </span><span
+        class="s1">StringBuilder</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                    <span class="s1">isInSegment </span><span class="s2">= </span><span class="s0">true</span><span
+        class="s2">;</span>
+                <span class="s2">}</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">isInSegment</span><span
+        class="s2">) {</span>
+                <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span><span class="s1">c</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return </span><span class="s1">segments</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s1">String writeSegmentedLine</span><span
+        class="s2">(</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span
+        class="s2">&gt; </span><span class="s1">segments</span><span class="s2">) {</span>
+        <span class="s1">var stringBuilder </span><span class="s2">= </span><span class="s0">new </span><span
+        class="s1">StringBuilder</span><span class="s2">();</span>
+
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">var i </span><span
+        class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span
+        class="s2">&lt; </span><span class="s1">segments</span><span class="s2">.</span><span
+        class="s1">size</span><span class="s2">(); </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">var segment </span><span class="s2">= </span><span class="s1">segments</span><span
+        class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span
+        class="s2">);</span>
+            <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span><span class="s1">SEGMENT_CONTAINER</span><span class="s2">);</span>
+
+            <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span>
+                <span class="s1">segment</span>
+                    <span class="s2">.</span><span class="s1">replace</span><span class="s2">(</span><span class="s3">&quot;</span><span
+        class="s0">\\</span><span class="s3">&quot;</span><span class="s2">, </span><span class="s3">&quot;</span><span
+        class="s0">\\\\</span><span class="s3">&quot;</span><span class="s2">) </span><span class="s4">// Ensure that backslashes aren't used to escape anything themselves.</span>
+                    <span class="s2">.</span><span class="s1">replace</span><span class="s2">(</span><span class="s3">&quot;&quot; </span><span
+        class="s2">+ </span><span class="s1">SEGMENT_CONTAINER</span><span class="s2">, </span><span
+        class="s3">&quot;</span><span class="s0">\\</span><span class="s3">&quot; </span><span class="s2">+ </span><span
+        class="s1">SEGMENT_CONTAINER</span><span class="s2">)</span>
+            <span class="s2">);</span>
+
+            <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span><span class="s1">SEGMENT_CONTAINER</span><span class="s2">);</span>
+
+            <span class="s4">// Add delimiter unless this is the last segment.</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">i </span><span
+        class="s2">&lt; </span><span class="s1">segments</span><span class="s2">.</span><span
+        class="s1">size</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">) {</span>
+                <span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">append</span><span
+        class="s2">(</span><span class="s1">SEGMENT_DELIMITER</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return </span><span class="s1">stringBuilder</span><span class="s2">.</span><span class="s1">toString</span><span
+        class="s2">();</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
