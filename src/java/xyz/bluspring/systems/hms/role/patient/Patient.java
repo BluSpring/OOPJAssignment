@@ -14,6 +14,7 @@ public class Patient extends PersonalizableUser {
     // Holds Prescription AND VisitNote objects interchangeably — this list
     // doesn't care which subclass each record actually is (polymorphism).
     private final List<MedicalRecord> medicalRecords = new ArrayList<>();
+    private final List<Rating> ratings = new ArrayList<>();
 
     public String getDateOfBirth() {
         return dateOfBirth;
@@ -50,5 +51,12 @@ public class Patient extends PersonalizableUser {
     public void removeMedicalRecord(MedicalRecord record) {
         medicalRecords.remove(record);
     }
-}
 
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void addRating(Rating rating) {
+        ratings.add(rating);
+    }
+}
