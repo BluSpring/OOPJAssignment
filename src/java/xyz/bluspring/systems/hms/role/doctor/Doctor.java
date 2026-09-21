@@ -18,6 +18,7 @@ public class Doctor extends PersonalizableUser {
     private DoctorDataStorage storage;
 
     public Doctor(String doctorId, String specialization) {
+
         this.doctorId = doctorId;
         this.specialization = specialization;
 
@@ -62,6 +63,7 @@ public class Doctor extends PersonalizableUser {
     }
 
     public void updateProfile(String displayName, String address) {
+
         getProfile().setDisplayName(displayName);
         getProfile().setAddress(address);
     }
@@ -138,6 +140,7 @@ public class Doctor extends PersonalizableUser {
 
     @Override
     public String toString() {
+
         return "Dr. " + getProfile().getDisplayName()
             + " - " + specialization;
     }
