@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 public class DoctorDataStorage {
 
@@ -40,17 +43,13 @@ public class DoctorDataStorage {
     public void saveVitalSign(VitalSign vitalSign) {
 
         try (PrintWriter writer =
-                 new PrintWriter(
-                     new FileWriter(VITAL_SIGNS_FILE, true))) {
+                 new PrintWriter(new FileWriter(VITAL_SIGNS_FILE, true))) {
 
             writer.println(vitalSign.toString());
 
         } catch (IOException e) {
-
-            System.out.println(
-                "Error saving vital sign: "
-                    + e.getMessage()
-            );
+            System.out.println("Error saving vital sign: "
+                + e.getMessage());
         }
     }
 
@@ -64,11 +63,8 @@ public class DoctorDataStorage {
             writer.println(note.toString());
 
         } catch (IOException e) {
-
-            System.out.println(
-                "Error saving consultation note: "
-                    + e.getMessage()
-            );
+            System.out.println("Error saving consultation note: "
+                + e.getMessage());
         }
     }
 
@@ -82,11 +78,8 @@ public class DoctorDataStorage {
             writer.println(prescription.toString());
 
         } catch (IOException e) {
-
-            System.out.println(
-                "Error saving prescription: "
-                    + e.getMessage()
-            );
+            System.out.println("Error saving prescription: "
+                + e.getMessage());
         }
     }
 
@@ -101,11 +94,65 @@ public class DoctorDataStorage {
             writer.println(request.toString());
 
         } catch (IOException e) {
+            System.out.println("Error saving medical test request: "
+                + e.getMessage());
+        }
+    }
+
+
+    // READ VITAL SIGNS
+
+    public List<String> readVitalSigns() {
+
+        return readFile(VITAL_SIGNS_FILE);
+    }
+
+
+    // READ CONSULTATION NOTES
+
+    public List<String> readConsultationNotes() {
+
+        return readFile(CONSULTATION_NOTES_FILE);
+    }
+
+
+    // READ PRESCRIPTIONS
+
+    public List<String> readPrescriptions() {
+
+        return readFile(PRESCRIPTIONS_FILE);
+    }
+
+
+    // READ MEDICAL TEST REQUESTS
+
+    public List<String> readMedicalTestRequests() {
+
+        return readFile(MEDICAL_TESTS_FILE);
+    }
+
+
+    // COMMON FILE READING METHOD
+
+    private List<String> readFile(String fileName) {
+
+        try {
+
+            Path path = Path.of(fileName);
+
+            if (!Files.exists(path)) {
+                return List.of();
+            }
+
+            return Files.readAllLines(path);
+
+        } catch (IOException e) {
 
             System.out.println(
-                "Error saving medical test request: "
-                    + e.getMessage()
+                "Error reading file: " + e.getMessage()
             );
+
+            return List.of();
         }
     }
 }
