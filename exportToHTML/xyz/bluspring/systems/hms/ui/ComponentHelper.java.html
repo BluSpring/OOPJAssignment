@@ -1,0 +1,267 @@
+<html>
+<head>
+    <title>ComponentHelper.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .s0 {
+            color: #cf8e6d;
+        }
+
+        .s1 {
+            color: #bcbec4;
+        }
+
+        .s2 {
+            color: #bcbec4;
+        }
+
+        .s3 {
+            color: #5f826b;
+            font-style: italic;
+        }
+
+        .s4 {
+            color: #67a37c;
+            font-style: italic;
+        }
+
+        .s5 {
+            color: #6aab73;
+        }
+
+        .s6 {
+            color: #2aacb8;
+        }
+
+        .s7 {
+            color: #7a7e85;
+        }
+    </style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060">
+    <tr>
+        <td>
+            <center>
+                <font face="Arial, Helvetica" color="#000000">
+                    ComponentHelper.java</font>
+            </center>
+        </td>
+    </tr>
+</table>
+<pre><span class="s0">package </span><span class="s1">xyz</span><span class="s2">.</span><span
+    class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span class="s2">.</span><span
+    class="s1">hms</span><span class="s2">.</span><span class="s1">ui</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">Component</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">Cursor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">KeyAdapter</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">KeyEvent</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">MouseEvent</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span
+        class="s1">MouseListener</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">font</span><span class="s2">.</span><span
+        class="s1">TextAttribute</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">Map</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">BorderFactory</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">JButton</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">JEditorPane</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">border</span><span class="s2">.</span><span
+        class="s1">EmptyBorder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">border</span><span class="s2">.</span><span
+        class="s1">LineBorder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span
+        class="s1">JTextComponent</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">xyz</span><span class="s2">.</span><span
+        class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span
+        class="s2">.</span><span class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span
+        class="s2">.</span><span class="s1">ColorUtils</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">xyz</span><span class="s2">.</span><span
+        class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span
+        class="s2">.</span><span class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span
+        class="s2">.</span><span class="s1">Utils</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">ComponentHelper </span><span class="s2">{</span>
+    <span class="s3">/**</span>
+     <span class="s3">* Adds a listener to make a component change foreground colours when hovered.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">component</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">hoverColor</span>
+     <span class="s3">*/</span>
+    <span class="s0">public static void </span><span class="s1">setForegroundHoverColor</span><span
+        class="s2">(</span><span class="s1">Component component</span><span class="s2">, </span><span class="s1">Color hoverColor</span><span
+        class="s2">) {</span>
+        <span class="s1">var originalColor </span><span class="s2">= </span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">getForeground</span><span class="s2">();</span>
+
+        <span class="s1">component</span><span class="s2">.</span><span class="s1">addMouseListener</span><span
+        class="s2">(</span><span class="s0">new </span><span class="s1">MouseListener</span><span class="s2">() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">mouseClicked</span><span class="s2">(</span><span
+        class="s1">MouseEvent e</span><span class="s2">) {</span>
+            <span class="s2">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">mousePressed</span><span class="s2">(</span><span
+        class="s1">MouseEvent e</span><span class="s2">) {</span>
+            <span class="s2">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">mouseReleased</span><span class="s2">(</span><span
+        class="s1">MouseEvent e</span><span class="s2">) {</span>
+            <span class="s2">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">mouseEntered</span><span class="s2">(</span><span
+        class="s1">MouseEvent e</span><span class="s2">) {</span>
+                <span class="s1">component</span><span class="s2">.</span><span class="s1">setForeground</span><span
+        class="s2">(</span><span class="s1">hoverColor</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">mouseExited</span><span class="s2">(</span><span
+        class="s1">MouseEvent e</span><span class="s2">) {</span>
+                <span class="s1">component</span><span class="s2">.</span><span class="s1">setForeground</span><span
+        class="s2">(</span><span class="s1">originalColor</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static </span><span class="s1">JEditorPane loadView</span><span class="s2">(</span><span
+        class="s1">String id</span><span class="s2">) {</span>
+        <span class="s1">var editor </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JEditorPane</span><span
+        class="s2">();</span>
+        <span class="s1">editor</span><span class="s2">.</span><span class="s1">setContentType</span><span
+        class="s2">(</span><span class="s5">&quot;text/html&quot;</span><span class="s2">);</span>
+        <span class="s1">editor</span><span class="s2">.</span><span class="s1">setText</span><span
+        class="s2">(</span><span class="s1">Utils</span><span class="s2">.</span><span class="s1">loadView</span><span
+        class="s2">(</span><span class="s1">id</span><span class="s2">));</span>
+        <span class="s1">editor</span><span class="s2">.</span><span class="s1">setEditable</span><span
+        class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s1">editor</span><span class="s2">.</span><span class="s1">addCaretListener</span><span class="s2">(</span><span
+        class="s1">e -&gt; </span><span class="s2">{</span>
+            <span class="s1">editor</span><span class="s2">.</span><span class="s1">getCaret</span><span
+        class="s2">().</span><span class="s1">setVisible</span><span class="s2">(</span><span
+        class="s0">false</span><span class="s2">);</span>
+            <span class="s1">editor</span><span class="s2">.</span><span class="s1">setOpaque</span><span
+        class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s2">});</span>
+
+        <span class="s0">return </span><span class="s1">editor</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Prevents whitespace from being entered into a field.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">field The text field to disallow whitespace into.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public static void </span><span class="s1">disallowWhitespace</span><span class="s2">(</span><span
+        class="s1">JTextComponent field</span><span class="s2">) {</span>
+        <span class="s1">field</span><span class="s2">.</span><span class="s1">addKeyListener</span><span
+        class="s2">(</span><span class="s0">new </span><span class="s1">KeyAdapter</span><span class="s2">() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">keyTyped</span><span class="s2">(</span><span
+        class="s1">KeyEvent e</span><span class="s2">) {</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">Character</span><span
+        class="s2">.</span><span class="s1">isWhitespace</span><span class="s2">(</span><span class="s1">e</span><span
+        class="s2">.</span><span class="s1">getKeyChar</span><span class="s2">())) {</span>
+                    <span class="s1">e</span><span class="s2">.</span><span class="s1">consume</span><span class="s2">();</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Adds default padding and margins to a text field</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">field</span>
+     <span class="s3">*/</span>
+    <span class="s0">public static void </span><span class="s1">makePaddedAndMarginedTextField</span><span
+        class="s2">(</span><span class="s1">JTextComponent field</span><span class="s2">) {</span>
+        <span class="s1">field</span><span class="s2">.</span><span class="s1">setOpaque</span><span class="s2">(</span><span
+        class="s0">false</span><span class="s2">);</span>
+        <span class="s1">field</span><span class="s2">.</span><span class="s1">setBorder</span><span class="s2">(</span><span
+        class="s1">BorderFactory</span><span class="s2">.</span><span class="s1">createCompoundBorder</span><span
+        class="s2">(</span>
+            <span class="s1">BorderFactory</span><span class="s2">.</span><span
+        class="s1">createCompoundBorder</span><span class="s2">(</span>
+                <span class="s1">BorderFactory</span><span class="s2">.</span><span
+        class="s1">createEmptyBorder</span><span class="s2">(</span><span class="s6">2</span><span
+        class="s2">, </span><span class="s6">2</span><span class="s2">, </span><span class="s6">2</span><span
+        class="s2">, </span><span class="s6">2</span><span class="s2">),</span>
+                <span class="s1">LineBorder</span><span class="s2">.</span><span class="s1">createBlackLineBorder</span><span
+        class="s2">()</span>
+            <span class="s2">),</span>
+            <span class="s1">BorderFactory</span><span class="s2">.</span><span class="s1">createEmptyBorder</span><span
+        class="s2">(</span><span class="s6">4</span><span class="s2">, </span><span class="s6">4</span><span class="s2">, </span><span
+        class="s6">4</span><span class="s2">, </span><span class="s6">4</span><span class="s2">)</span>
+        <span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Makes a button follow the formatting of a hyperlink</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">button</span>
+     <span class="s3">*/</span>
+    <span class="s0">public static void </span><span class="s1">makeHyperlink</span><span class="s2">(</span><span
+        class="s1">JButton button</span><span class="s2">) {</span>
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setOpaque</span><span
+        class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+        <span class="s7">// Do not set the generic types, as otherwise an error occurs in compilation.</span>
+        <span class="s1">Map attributes </span><span class="s2">= </span><span class="s1">button</span><span class="s2">.</span><span
+        class="s1">getFont</span><span class="s2">().</span><span class="s1">getAttributes</span><span
+        class="s2">();</span>
+        <span class="s1">attributes</span><span class="s2">.</span><span class="s1">put</span><span
+        class="s2">(</span><span class="s1">TextAttribute</span><span class="s2">.</span><span
+        class="s1">UNDERLINE</span><span class="s2">, </span><span class="s1">TextAttribute</span><span
+        class="s2">.</span><span class="s1">UNDERLINE_ON</span><span class="s2">);</span>
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setFont</span><span
+        class="s2">(</span><span class="s1">button</span><span class="s2">.</span><span class="s1">getFont</span><span
+        class="s2">().</span><span class="s1">deriveFont</span><span class="s2">(</span><span
+        class="s1">attributes</span><span class="s2">));</span>
+
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setForeground</span><span
+        class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span
+        class="s2">);</span>
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setBorder</span><span
+        class="s2">(</span><span class="s0">new </span><span class="s1">EmptyBorder</span><span class="s2">(</span><span
+        class="s6">2</span><span class="s2">, </span><span class="s6">2</span><span class="s2">, </span><span
+        class="s6">2</span><span class="s2">, </span><span class="s6">2</span><span class="s2">));</span>
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setBackground</span><span
+        class="s2">(</span><span class="s1">ColorUtils</span><span class="s2">.</span><span class="s1">NONE</span><span
+        class="s2">);</span>
+        <span class="s1">button</span><span class="s2">.</span><span class="s1">setCursor</span><span
+        class="s2">(</span><span class="s1">Cursor</span><span class="s2">.</span><span
+        class="s1">getPredefinedCursor</span><span class="s2">(</span><span class="s1">Cursor</span><span
+        class="s2">.</span><span class="s1">HAND_CURSOR</span><span class="s2">));</span>
+
+        <span class="s1">setForegroundHoverColor</span><span class="s2">(</span><span class="s1">button</span><span
+        class="s2">, </span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span
+        class="s6">0xFEFF00</span><span class="s2">));</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

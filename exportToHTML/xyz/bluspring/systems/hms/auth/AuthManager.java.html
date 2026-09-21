@@ -1,0 +1,400 @@
+<html>
+<head>
+    <title>AuthManager.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .s0 {
+            color: #cf8e6d;
+        }
+
+        .s1 {
+            color: #bcbec4;
+        }
+
+        .s2 {
+            color: #bcbec4;
+        }
+
+        .s3 {
+            color: #7a7e85;
+        }
+
+        .s4 {
+            color: #6aab73;
+        }
+
+        .s5 {
+            color: #2aacb8;
+        }
+    </style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060">
+    <tr>
+        <td>
+            <center>
+                <font face="Arial, Helvetica" color="#000000">
+                    AuthManager.java</font>
+            </center>
+        </td>
+    </tr>
+</table>
+<pre><span class="s0">package </span><span class="s1">xyz</span><span class="s2">.</span><span
+    class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span class="s2">.</span><span
+    class="s1">hms</span><span class="s2">.</span><span class="s1">auth</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span
+        class="s2">.</span><span class="s1">File</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span
+        class="s2">.</span><span class="s1">charset</span><span class="s2">.</span><span
+        class="s1">StandardCharsets</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span
+        class="s1">security</span><span class="s2">.</span><span class="s1">MessageDigest</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span
+        class="s1">security</span><span class="s2">.</span><span class="s1">NoSuchAlgorithmException</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">Collection</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">Iterator</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">Locale</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">UUID</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span
+        class="s2">.</span><span class="s1">regex</span><span class="s2">.</span><span class="s1">Pattern</span><span
+        class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">xyz</span><span class="s2">.</span><span
+        class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span
+        class="s2">.</span><span class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span
+        class="s2">.</span><span class="s1">ByteArrayUtils</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">xyz</span><span class="s2">.</span><span
+        class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span
+        class="s2">.</span><span class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span
+        class="s2">.</span><span class="s1">data</span><span class="s2">.</span><span class="s1">DataSerializable</span><span
+        class="s2">;</span>
+<span class="s0">import </span><span class="s1">xyz</span><span class="s2">.</span><span
+        class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span
+        class="s2">.</span><span class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span
+        class="s2">.</span><span class="s1">data</span><span class="s2">.</span><span
+        class="s1">DataSerializers</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">AuthManager </span><span class="s0">implements </span><span
+        class="s1">Iterable</span><span class="s2">&lt;</span><span class="s1">Account</span><span
+        class="s2">&gt;, </span><span class="s1">DataSerializable </span><span class="s2">{</span>
+    <span
+        class="s3">// Regular expression pattern for defining emails, which was officially provided by RFC 5322.</span>
+    <span class="s0">private static final </span><span class="s1">Pattern EMAIL_REGEX </span><span
+        class="s2">= </span><span class="s1">Pattern</span><span class="s2">.</span><span class="s1">compile</span><span
+        class="s2">(</span><span
+        class="s4">&quot;^[a-zA-Z0-9_!#$%&amp;’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$&quot;</span><span class="s2">);</span>
+
+    <span class="s3">// Ensures that the provided email is valid.</span>
+    <span class="s0">public static void </span><span class="s1">checkValidEmail</span><span class="s2">(</span><span
+        class="s1">String email</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">EMAIL_REGEX</span><span
+        class="s2">.</span><span class="s1">matcher</span><span class="s2">(</span><span class="s1">email</span><span
+        class="s2">).</span><span class="s1">matches</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;Invalid email provided!&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Ensures that the user has a strong password</span>
+    <span class="s0">public static void </span><span class="s1">checkStrongPassword</span><span class="s2">(</span><span
+        class="s1">String password</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">password</span><span
+        class="s2">.</span><span class="s1">length</span><span class="s2">() &lt; </span><span class="s5">8</span><span
+        class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;Password must be more than 8 characters!&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private final </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">Account</span><span
+        class="s2">&gt; </span><span class="s1">accounts </span><span class="s2">= </span><span
+        class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+    <span class="s0">private final </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AuthLog</span><span
+        class="s2">&gt; </span><span class="s1">authLogs </span><span class="s2">= </span><span
+        class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+    <span class="s0">private final </span><span class="s1">AccountType type</span><span class="s2">;</span>
+
+    <span class="s0">private final </span><span class="s1">File accountFile</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">File authLogsFile</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">AuthManager</span><span class="s2">(</span><span class="s1">AccountType type</span><span
+        class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">type </span><span
+        class="s2">= </span><span class="s1">type</span><span class="s2">;</span>
+
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">accountFile </span><span
+        class="s2">= </span><span class="s0">new </span><span class="s1">File</span><span class="s2">(</span><span
+        class="s1">type</span><span class="s2">.</span><span class="s1">name</span><span class="s2">().</span><span
+        class="s1">toLowerCase</span><span class="s2">(</span><span class="s1">Locale</span><span
+        class="s2">.</span><span class="s1">ROOT</span><span class="s2">) + </span><span class="s4">&quot;_accounts.txt&quot;</span><span
+        class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">authLogsFile </span><span
+        class="s2">= </span><span class="s0">new </span><span class="s1">File</span><span class="s2">(</span><span
+        class="s1">type</span><span class="s2">.</span><span class="s1">name</span><span class="s2">().</span><span
+        class="s1">toLowerCase</span><span class="s2">(</span><span class="s1">Locale</span><span
+        class="s2">.</span><span class="s1">ROOT</span><span class="s2">) + </span><span class="s4">&quot;_auth_logs.txt&quot;</span><span
+        class="s2">);</span>
+
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">load</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">AccountType getType</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">type</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Iterator</span><span class="s2">&lt;</span><span
+        class="s1">Account</span><span class="s2">&gt; </span><span class="s1">iterator</span><span
+        class="s2">() {</span>
+        <span class="s0">return this</span><span class="s2">.</span><span class="s1">accounts</span><span
+        class="s2">.</span><span class="s1">iterator</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Collection</span><span class="s2">&lt;</span><span class="s1">Account</span><span
+        class="s2">&gt; </span><span class="s1">getAccounts</span><span class="s2">() {</span>
+        <span class="s0">return this</span><span class="s2">.</span><span class="s1">accounts</span><span
+        class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Iterator</span><span class="s2">&lt;</span><span
+        class="s1">AuthLog</span><span class="s2">&gt; </span><span class="s1">authLogIterator</span><span class="s2">() {</span>
+        <span class="s0">return this</span><span class="s2">.</span><span class="s1">authLogs</span><span
+        class="s2">.</span><span class="s1">iterator</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">load</span><span class="s2">() {</span>
+        <span class="s1">accounts</span><span class="s2">.</span><span class="s1">clear</span><span
+        class="s2">();</span>
+        <span class="s1">authLogs</span><span class="s2">.</span><span class="s1">clear</span><span
+        class="s2">();</span>
+
+        <span class="s1">DataSerializers</span><span class="s2">.</span><span class="s1">deserializeLines</span><span
+        class="s2">(</span><span class="s1">Account</span><span class="s2">.</span><span class="s0">class</span><span
+        class="s2">, </span><span class="s1">accountFile</span><span class="s2">, </span><span
+        class="s1">accounts</span><span class="s2">);</span>
+        <span class="s1">DataSerializers</span><span class="s2">.</span><span class="s1">deserializeLines</span><span
+        class="s2">(</span><span class="s1">AuthLog</span><span class="s2">.</span><span class="s0">class</span><span
+        class="s2">, </span><span class="s1">authLogsFile</span><span class="s2">, </span><span
+        class="s1">authLogs</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">save</span><span class="s2">() {</span>
+        <span class="s1">DataSerializers</span><span class="s2">.</span><span class="s1">serializeValues</span><span
+        class="s2">(</span><span class="s1">Account</span><span class="s2">.</span><span class="s0">class</span><span
+        class="s2">, </span><span class="s1">accountFile</span><span class="s2">, </span><span
+        class="s1">accounts</span><span class="s2">);</span>
+        <span class="s1">DataSerializers</span><span class="s2">.</span><span class="s1">serializeValues</span><span
+        class="s2">(</span><span class="s1">AuthLog</span><span class="s2">.</span><span class="s0">class</span><span
+        class="s2">, </span><span class="s1">authLogsFile</span><span class="s2">, </span><span
+        class="s1">authLogs</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Account getAccountByEmail</span><span class="s2">(</span><span
+        class="s1">String email</span><span class="s2">) {</span>
+        <span class="s3">// Search for an account with a given email</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Account account </span><span
+        class="s2">: </span><span class="s1">accounts</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">account</span><span class="s2">.</span><span
+        class="s1">getEmail</span><span class="s2">().</span><span class="s1">equals</span><span
+        class="s2">(</span><span class="s1">email</span><span class="s2">)) {</span>
+                <span class="s0">return </span><span class="s1">account</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return null</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Account getAccountByUUID</span><span class="s2">(</span><span
+        class="s1">UUID uuid</span><span class="s2">) {</span>
+        <span class="s3">// Search for an account with a given UUID</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Account account </span><span
+        class="s2">: </span><span class="s1">accounts</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">account</span><span class="s2">.</span><span
+        class="s1">getUUID</span><span class="s2">().</span><span class="s1">equals</span><span class="s2">(</span><span
+        class="s1">uuid</span><span class="s2">)) {</span>
+                <span class="s0">return </span><span class="s1">account</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return null</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Account create</span><span class="s2">(</span><span class="s1">String email</span><span
+        class="s2">, </span><span class="s1">String displayName</span><span class="s2">, </span><span class="s1">String password</span><span
+        class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s0">this</span><span class="s2">.</span><span
+        class="s1">getAccountByEmail</span><span class="s2">(</span><span class="s1">email</span><span
+        class="s2">) != </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;An account with that email already exists!&quot;</span><span
+        class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">checkValidEmail</span><span class="s2">(</span><span class="s1">email</span><span
+        class="s2">);</span>
+        <span class="s1">checkStrongPassword</span><span class="s2">(</span><span class="s1">password</span><span
+        class="s2">);</span>
+
+        <span class="s3">// Generate a random UUID. This UUID is used to uniquely identify an account.</span>
+        <span class="s1">var uuid </span><span class="s2">= </span><span class="s1">UUID</span><span class="s2">.</span><span
+        class="s1">randomUUID</span><span class="s2">();</span>
+
+        <span class="s3">// Ensure that the UUID is actually unique, as UUIDs are bound to collide even if it is an incredibly low chance of doing so.</span>
+        <span class="s0">do </span><span class="s2">{</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s0">this</span><span
+        class="s2">.</span><span class="s1">getAccountByUUID</span><span class="s2">(</span><span class="s1">uuid</span><span
+        class="s2">) != </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">uuid </span><span class="s2">= </span><span class="s1">UUID</span><span
+        class="s2">.</span><span class="s1">randomUUID</span><span class="s2">();</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">while </span><span class="s2">(</span><span
+        class="s0">true</span><span class="s2">);</span>
+
+        <span class="s1">var account </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Account</span><span
+        class="s2">(</span><span class="s0">this</span><span class="s2">.</span><span class="s1">getType</span><span
+        class="s2">(), </span><span class="s1">uuid</span><span class="s2">, </span><span class="s1">email</span><span
+        class="s2">, </span><span class="s1">displayName</span><span class="s2">, </span><span
+        class="s1">hashPassword</span><span class="s2">(</span><span class="s1">password</span><span
+        class="s2">));</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">accounts</span><span
+        class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">account</span><span
+        class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">addAuthLog</span><span class="s2">(</span><span
+        class="s1">account</span><span class="s2">, </span><span class="s1">AuthLog</span><span class="s2">.</span><span
+        class="s1">Type</span><span class="s2">.</span><span class="s1">REGISTER</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">save</span><span class="s2">();</span>
+
+        <span class="s0">return </span><span class="s1">account</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">deleteAccount</span><span class="s2">(</span><span class="s1">Account account</span><span
+        class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">accounts</span><span
+        class="s2">.</span><span class="s1">remove</span><span class="s2">(</span><span class="s1">account</span><span
+        class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">save</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Account login</span><span class="s2">(</span><span class="s1">String email</span><span
+        class="s2">, </span><span class="s1">String password</span><span class="s2">) {</span>
+        <span class="s1">var account </span><span class="s2">= </span><span class="s0">this</span><span
+        class="s2">.</span><span class="s1">getAccountByEmail</span><span class="s2">(</span><span
+        class="s1">email</span><span class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">account </span><span
+        class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;Invalid email or password!&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">account</span><span
+        class="s2">.</span><span class="s1">getPasswordHash</span><span class="s2">().</span><span
+        class="s1">equals</span><span class="s2">(</span><span class="s0">this</span><span class="s2">.</span><span
+        class="s1">hashPassword</span><span class="s2">(</span><span class="s1">password</span><span
+        class="s2">))) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;Invalid email or password!&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">addAuthLog</span><span class="s2">(</span><span
+        class="s1">account</span><span class="s2">, </span><span class="s1">AuthLog</span><span class="s2">.</span><span
+        class="s1">Type</span><span class="s2">.</span><span class="s1">LOGIN</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">save</span><span class="s2">();</span>
+
+        <span class="s0">return </span><span class="s1">account</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">changePassword</span><span class="s2">(</span><span class="s1">Account account</span><span
+        class="s2">, </span><span class="s1">String oldPassword</span><span class="s2">, </span><span class="s1">String newPassword</span><span
+        class="s2">) {</span>
+        <span class="s1">checkStrongPassword</span><span class="s2">(</span><span class="s1">newPassword</span><span
+        class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">account</span><span
+        class="s2">.</span><span class="s1">getPasswordHash</span><span class="s2">().</span><span
+        class="s1">equals</span><span class="s2">(</span><span class="s0">this</span><span class="s2">.</span><span
+        class="s1">hashPassword</span><span class="s2">(</span><span class="s1">oldPassword</span><span
+        class="s2">))) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;Invalid email or password!&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">account</span><span
+        class="s2">.</span><span class="s1">getPasswordHash</span><span class="s2">().</span><span
+        class="s1">equals</span><span class="s2">(</span><span class="s0">this</span><span class="s2">.</span><span
+        class="s1">hashPassword</span><span class="s2">(</span><span class="s1">newPassword</span><span
+        class="s2">))) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span
+        class="s2">(</span><span class="s4">&quot;New password is the same as the old password!&quot;</span><span
+        class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">account</span><span class="s2">.</span><span class="s1">setPasswordHash</span><span class="s2">(</span><span
+        class="s0">this</span><span class="s2">.</span><span class="s1">hashPassword</span><span
+        class="s2">(</span><span class="s1">newPassword</span><span class="s2">));</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">addAuthLog</span><span class="s2">(</span><span
+        class="s1">account</span><span class="s2">, </span><span class="s1">AuthLog</span><span class="s2">.</span><span
+        class="s1">Type</span><span class="s2">.</span><span class="s1">CHANGE_PASSWORD</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">save</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">addAuthLog</span><span class="s2">(</span><span class="s1">Account account</span><span
+        class="s2">, </span><span class="s1">AuthLog</span><span class="s2">.</span><span
+        class="s1">Type type</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">addAuthLog</span><span class="s2">(</span><span
+        class="s1">account</span><span class="s2">, </span><span class="s1">type</span><span class="s2">, </span><span
+        class="s4">&quot;&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">addAuthLog</span><span class="s2">(</span><span class="s1">Account account</span><span
+        class="s2">, </span><span class="s1">AuthLog</span><span class="s2">.</span><span
+        class="s1">Type type</span><span class="s2">, </span><span class="s1">String extraData</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">authLogs</span><span
+        class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span
+        class="s1">AuthLog</span><span class="s2">(</span><span class="s1">account</span><span class="s2">.</span><span
+        class="s1">getUUID</span><span class="s2">(), </span><span class="s1">type</span><span class="s2">, </span><span
+        class="s1">System</span><span class="s2">.</span><span class="s1">currentTimeMillis</span><span
+        class="s2">(), </span><span class="s1">extraData</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private </span><span class="s1">String hashPassword</span><span class="s2">(</span><span
+        class="s1">String password</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s3">// Get a SHA-256 message digest algorithm for hashing</span>
+            <span class="s1">var digest </span><span class="s2">= </span><span class="s1">MessageDigest</span><span
+        class="s2">.</span><span class="s1">getInstance</span><span class="s2">(</span><span class="s4">&quot;SHA-256&quot;</span><span
+        class="s2">);</span>
+            <span class="s3">// Run the string through the algorithm to hash it with SHA-256</span>
+            <span class="s1">var hashBytes </span><span class="s2">= </span><span class="s1">digest</span><span
+        class="s2">.</span><span class="s1">digest</span><span class="s2">(</span><span class="s1">password</span><span
+        class="s2">.</span><span class="s1">getBytes</span><span class="s2">(</span><span
+        class="s1">StandardCharsets</span><span class="s2">.</span><span class="s1">UTF_8</span><span
+        class="s2">));</span>
+
+            <span class="s3">// Convert the hashed string into a hexadecimal string, for storage.</span>
+            <span class="s0">return </span><span class="s1">ByteArrayUtils</span><span class="s2">.</span><span
+        class="s1">bytesToHex</span><span class="s2">(</span><span class="s1">hashBytes</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">NoSuchAlgorithmException e</span><span
+        class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span
+        class="s1">e</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

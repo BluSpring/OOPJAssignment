@@ -1,0 +1,124 @@
+<html>
+<head>
+    <title>SwingComponentBuilder.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .s0 {
+            color: #cf8e6d;
+        }
+
+        .s1 {
+            color: #bcbec4;
+        }
+
+        .s2 {
+            color: #bcbec4;
+        }
+
+        .s3 {
+            color: #5f826b;
+            font-style: italic;
+        }
+
+        .s4 {
+            color: #67a37c;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060">
+    <tr>
+        <td>
+            <center>
+                <font face="Arial, Helvetica" color="#000000">
+                    SwingComponentBuilder.java</font>
+            </center>
+        </td>
+    </tr>
+</table>
+<pre><span class="s0">package </span><span class="s1">xyz</span><span class="s2">.</span><span
+    class="s1">bluspring</span><span class="s2">.</span><span class="s1">systems</span><span class="s2">.</span><span
+    class="s1">hms</span><span class="s2">.</span><span class="s1">utils</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span
+        class="s2">.</span><span class="s1">Font</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">JComponent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span
+        class="s2">.</span><span class="s1">border</span><span class="s2">.</span><span class="s1">Border</span><span
+        class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* A helper class to set different component attributes without making it a separate variable</span>
+ <span class="s3">*</span>
+ <span class="s3">* </span><span class="s4">@param </span><span class="s1">&lt;</span><span class="s3">T</span><span
+        class="s1">&gt; </span><span class="s3">The component to modify/build</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T </span><span class="s0">extends </span><span class="s1">JComponent</span><span
+        class="s2">&gt; {</span>
+    <span class="s0">private final </span><span class="s1">T component</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">(</span><span
+        class="s1">T component</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component </span><span
+        class="s2">= </span><span class="s1">component</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">setOpaque</span><span class="s2">(</span><span
+        class="s0">boolean </span><span class="s1">opaque</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">setOpaque</span><span class="s2">(</span><span class="s1">opaque</span><span
+        class="s2">);</span>
+        <span class="s0">return this</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">setBackground</span><span
+        class="s2">(</span><span class="s1">Color color</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span
+        class="s1">color</span><span class="s2">);</span>
+        <span class="s0">return this</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">setForeground</span><span
+        class="s2">(</span><span class="s1">Color color</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">setForeground</span><span class="s2">(</span><span
+        class="s1">color</span><span class="s2">);</span>
+        <span class="s0">return this</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">setFont</span><span class="s2">(</span><span
+        class="s1">Font font</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s1">font</span><span
+        class="s2">);</span>
+        <span class="s0">return this</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">SwingComponentBuilder</span><span class="s2">&lt;</span><span
+        class="s1">T</span><span class="s2">&gt; </span><span class="s1">setBorder</span><span class="s2">(</span><span
+        class="s1">Border border</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">.</span><span class="s1">setBorder</span><span class="s2">(</span><span class="s1">border</span><span
+        class="s2">);</span>
+        <span class="s0">return this</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">T build</span><span class="s2">() {</span>
+        <span class="s0">return this</span><span class="s2">.</span><span class="s1">component</span><span
+        class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
