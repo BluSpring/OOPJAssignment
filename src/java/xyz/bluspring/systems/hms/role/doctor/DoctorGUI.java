@@ -1,15 +1,18 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
+import xyz.bluspring.systems.hms.role.patient.Patient;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class DoctorGUI extends JFrame {
 
     private Doctor doctor;
+    private Patient patient;
 
-    public DoctorGUI(Doctor doctor) {
-
+    public DoctorGUI(Doctor doctor, Patient patient) {
         this.doctor = doctor;
+        this.patient = patient;
 
         setTitle("Doctor Dashboard");
         setSize(500, 400);
@@ -20,32 +23,30 @@ public class DoctorGUI extends JFrame {
         panel.setLayout(new GridLayout(6, 1, 10, 10));
 
         JButton profileButton = new JButton("Edit Profile");
+        JButton patientButton = new JButton("View Patient Information");
         JButton vitalButton = new JButton("Log Vital Signs");
         JButton noteButton = new JButton("Add Consultation Note");
         JButton prescriptionButton = new JButton("Issue Prescription");
         JButton testButton = new JButton("Request Medical Test");
-        JButton exitButton = new JButton("Exit");
 
         panel.add(profileButton);
+        panel.add(patientButton);
         panel.add(vitalButton);
         panel.add(noteButton);
         panel.add(prescriptionButton);
         panel.add(testButton);
-        panel.add(exitButton);
 
         add(panel);
 
         profileButton.addActionListener(e -> editProfile());
+        patientButton.addActionListener(e -> viewPatientInformation());
         vitalButton.addActionListener(e -> logVitalSigns());
         noteButton.addActionListener(e -> addConsultationNote());
         prescriptionButton.addActionListener(e -> issuePrescription());
         testButton.addActionListener(e -> requestMedicalTest());
-
-        exitButton.addActionListener(e -> System.exit(0));
     }
 
     private void editProfile() {
-
         String name = JOptionPane.showInputDialog(
             this,
             "Enter your name:"
@@ -72,53 +73,63 @@ public class DoctorGUI extends JFrame {
         );
     }
 
-    private void logVitalSigns() {
+    private void viewPatientInformation() {
+        String information = doctor.getPatientInformation(patient);
 
-        String patientId = JOptionPane.showInputDialog(
+        JOptionPane.showMessageDialog(
             this,
-            "Enter Patient ID:"
+            information,
+            "Patient Information",
+            JOptionPane.INFORMATION_MESSAGE
         );
+    }
 
-        if (patientId == null) {
-            return;
-        }
+    private void logVitalSigns() {
 
         String temperatureText = JOptionPane.showInputDialog(
             this,
             "Enter Temperature:"
         );
 
+        if (temperatureText == null) {
+            return;
+        }
+
         String heartRateText = JOptionPane.showInputDialog(
             this,
             "Enter Heart Rate:"
         );
+
+        if (heartRateText == null) {
+            return;
+        }
 
         String bloodPressureText = JOptionPane.showInputDialog(
             this,
             "Enter Blood Pressure:"
         );
 
+        if (bloodPressureText == null) {
+            return;
+        }
+
         String oxygenLevelText = JOptionPane.showInputDialog(
             this,
             "Enter Oxygen Level:"
         );
 
+        if (oxygenLevelText == null) {
+            return;
+        }
+
         try {
-
-            double temperature =
-                Double.parseDouble(temperatureText);
-
-            int heartRate =
-                Integer.parseInt(heartRateText);
-
-            int bloodPressure =
-                Integer.parseInt(bloodPressureText);
-
-            int oxygenLevel =
-                Integer.parseInt(oxygenLevelText);
+            double temperature = Double.parseDouble(temperatureText);
+            int heartRate = Integer.parseInt(heartRateText);
+            int bloodPressure = Integer.parseInt(bloodPressureText);
+            int oxygenLevel = Integer.parseInt(oxygenLevelText);
 
             doctor.logVitalSign(
-                patientId,
+                patient,
                 temperature,
                 heartRate,
                 bloodPressure,
@@ -131,7 +142,6 @@ public class DoctorGUI extends JFrame {
             );
 
         } catch (NumberFormatException e) {
-
             JOptionPane.showMessageDialog(
                 this,
                 "Please enter valid numbers.",
@@ -142,15 +152,6 @@ public class DoctorGUI extends JFrame {
     }
 
     private void addConsultationNote() {
-
-        String patientId = JOptionPane.showInputDialog(
-            this,
-            "Enter Patient ID:"
-        );
-
-        if (patientId == null) {
-            return;
-        }
 
         String date = JOptionPane.showInputDialog(
             this,
@@ -171,7 +172,7 @@ public class DoctorGUI extends JFrame {
         }
 
         doctor.addConsultationNote(
-            patientId,
+            patient,
             date,
             notes
         );
@@ -183,15 +184,6 @@ public class DoctorGUI extends JFrame {
     }
 
     private void issuePrescription() {
-
-        String patientId = JOptionPane.showInputDialog(
-            this,
-            "Enter Patient ID:"
-        );
-
-        if (patientId == null) {
-            return;
-        }
 
         String medication = JOptionPane.showInputDialog(
             this,
@@ -221,7 +213,7 @@ public class DoctorGUI extends JFrame {
         }
 
         doctor.issuePrescription(
-            patientId,
+            patient,
             medication,
             dosage,
             instructions
@@ -234,15 +226,6 @@ public class DoctorGUI extends JFrame {
     }
 
     private void requestMedicalTest() {
-
-        String patientId = JOptionPane.showInputDialog(
-            this,
-            "Enter Patient ID:"
-        );
-
-        if (patientId == null) {
-            return;
-        }
 
         String testType = JOptionPane.showInputDialog(
             this,
@@ -263,7 +246,7 @@ public class DoctorGUI extends JFrame {
         }
 
         doctor.requestMedicalTest(
-            patientId,
+            patient,
             testType,
             reason
         );
