@@ -20,11 +20,6 @@ public class DoctorMain {
             "0123456789"
         );
 
-        DoctorGUI gui = new DoctorGUI(
-            doctor,
-            patient
-        );
-
-        gui.setVisible(true);
+        // rest of your code...
     }
 }
