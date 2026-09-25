@@ -58,11 +58,12 @@ public class Doctor extends PersonalizableUser {
             + "\nPhone Number: " + patient.getPhoneNumber();
     }
 
-    public void logVitalSign(Patient patient,
-                             double temperature,
-                             int heartRate,
-                             int bloodPressure,
-                             int oxygenLevel) {
+    public void logVitalSign(
+        Patient patient,
+        double temperature,
+        int heartRate,
+        int bloodPressure,
+        int oxygenLevel) {
 
         VitalSign vitalSign = new VitalSign(
             patient.getPatientId(),
@@ -76,9 +77,10 @@ public class Doctor extends PersonalizableUser {
         storage.saveVitalSign(vitalSign);
     }
 
-    public void addConsultationNote(Patient patient,
-                                    String date,
-                                    String notes) {
+    public void addConsultationNote(
+        Patient patient,
+        String date,
+        String notes) {
 
         ConsultationNote note = new ConsultationNote(
             patient.getPatientId(),
@@ -91,10 +93,11 @@ public class Doctor extends PersonalizableUser {
         storage.saveConsultationNote(note);
     }
 
-    public void issuePrescription(Patient patient,
-                                  String medication,
-                                  String dosage,
-                                  String instructions) {
+    public void issuePrescription(
+        Patient patient,
+        String medication,
+        String dosage,
+        String instructions) {
 
         Prescription prescription = new Prescription(
             patient.getPatientId(),
@@ -108,9 +111,10 @@ public class Doctor extends PersonalizableUser {
         storage.savePrescription(prescription);
     }
 
-    public void requestMedicalTest(Patient patient,
-                                   String testType,
-                                   String reason) {
+    public void requestMedicalTest(
+        Patient patient,
+        String testType,
+        String reason) {
 
         MedicalTestRequest request = new MedicalTestRequest(
             patient.getPatientId(),
