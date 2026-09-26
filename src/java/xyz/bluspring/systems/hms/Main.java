@@ -68,6 +68,8 @@ public class Main {
         // Initialize data classes, just to make sure that their serializers are registered first.
         Account.init();
         AuthLog.init();
+        xyz.bluspring.systems.hms.role.manager.Department.init();
+        xyz.bluspring.systems.hms.role.manager.DoctorShift.init();
         // TODO
 
         if (IS_TESTING) { // Add testing data
