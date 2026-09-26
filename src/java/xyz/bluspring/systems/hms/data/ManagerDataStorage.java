@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.role.manager.Department;
 import xyz.bluspring.systems.hms.role.manager.DoctorShift;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
@@ -53,12 +54,23 @@ public class ManagerDataStorage {
         if (!doctorShifts.contains(shift)) {
             doctorShifts.add(shift);
         }
+
         this.save();
     }
 
     // Read all shifts from memory (loaded from file)
     public List<DoctorShift> readShifts() {
         return doctorShifts;
+    }
+
+    public DoctorShift getShift(Doctor doctor) {
+        for (DoctorShift shift : this.readShifts()) {
+            if (shift.getDoctor() == doctor) {
+                return shift;
+            }
+        }
+
+        return null;
     }
 
     // Count total consultations from doctor file for metrics

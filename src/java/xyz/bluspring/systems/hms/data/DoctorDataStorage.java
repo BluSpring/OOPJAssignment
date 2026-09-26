@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.bluspring.systems.hms.role.doctor.ConsultationNote;
+import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.role.doctor.MedicalTestRequest;
 import xyz.bluspring.systems.hms.role.doctor.VitalSign;
+import xyz.bluspring.systems.hms.role.patient.Patient;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
 
 public class DoctorDataStorage {
@@ -23,12 +25,32 @@ public class DoctorDataStorage {
     private DoctorDataStorage() {
     }
 
+    public List<VitalSign> getVitalSigns(Patient patient) {
+        return this.getVitalSigns().stream().filter(s -> s.getPatient() == patient).toList();
+    }
+
     public List<VitalSign> getVitalSigns() {
         return vitalSigns;
     }
 
+    public List<ConsultationNote> getConsultationNotes(Patient patient) {
+        return this.getConsultationNotes().stream().filter(s -> s.getPatient() == patient).toList();
+    }
+
+    public List<ConsultationNote> getConsultationNotes(Doctor doctor) {
+        return this.getConsultationNotes().stream().filter(s -> s.getDoctor() == doctor).toList();
+    }
+
     public List<ConsultationNote> getConsultationNotes() {
         return consultationNotes;
+    }
+
+    public List<MedicalTestRequest> getMedicalTestRequests(Patient patient) {
+        return this.getMedicalTestRequests().stream().filter(s -> s.getPatient() == patient).toList();
+    }
+
+    public List<MedicalTestRequest> getMedicalTestRequests(Doctor doctor) {
+        return this.getMedicalTestRequests().stream().filter(s -> s.getDoctor() == doctor).toList();
     }
 
     public List<MedicalTestRequest> getMedicalTestRequests() {
@@ -37,14 +59,17 @@ public class DoctorDataStorage {
 
     public void saveVitalSign(VitalSign vitalSign) {
         this.vitalSigns.add(vitalSign);
+        this.save();
     }
 
     public void saveConsultationNote(ConsultationNote note) {
         this.consultationNotes.add(note);
+        this.save();
     }
 
     public void saveMedicalTestRequest(MedicalTestRequest request) {
         this.medicalTestRequests.add(request);
+        this.save();
     }
 
     public void load() {
