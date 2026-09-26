@@ -1,44 +1,55 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
-public class ConsultationNote {
+import java.util.Date;
 
-    private String patientId;
-    private String doctorId;
-    private String date;
+import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.data.DataSerializable;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
+
+public class ConsultationNote implements DataSerializable<ConsultationNote> {
+    public static final DataSerializer<ConsultationNote> SERIALIZER = RecordDataSerializer.of(
+        Patient.REFERENCE_SERIALIZER, ConsultationNote::getPatient,
+        Doctor.REFERENCE_SERIALIZER, ConsultationNote::getDoctor,
+        DataSerializer.DATE, ConsultationNote::getDate,
+        DataSerializer.STRING, ConsultationNote::getNotes,
+        ConsultationNote::new
+    );
+
+    private final Patient patient;
+    private final Doctor doctor;
+    private Date date;
     private String notes;
 
-    public ConsultationNote(String patientId,
-                            String doctorId,
-                            String date,
+    public ConsultationNote(Patient patient,
+                            Doctor doctor,
+                            Date date,
                             String notes) {
 
-        this.patientId = patientId;
-        this.doctorId = doctorId;
+        this.patient = patient;
+        this.doctor = doctor;
         this.date = date;
         this.notes = notes;
     }
 
-    public String getPatientId() {
-        return patientId;
+    @Override
+    public DataSerializer<ConsultationNote> getSerializer() {
+        return SERIALIZER;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public String getDoctorId() {
-        return doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorId(String doctorId) {
-        this.doctorId = doctorId;
-    }
-
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -52,8 +63,8 @@ public class ConsultationNote {
 
     @Override
     public String toString() {
-        return "Patient ID: " + patientId
-            + ", Doctor ID: " + doctorId
+        return "Patient ID: " + patient.getPatientId()
+            + ", Doctor ID: " + doctor.getDoctorId()
             + ", Date: " + date
             + ", Notes: " + notes;
     }

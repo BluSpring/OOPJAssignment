@@ -1,9 +1,16 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
-import xyz.bluspring.systems.hms.role.patient.Patient;
+import java.awt.GridLayout;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import xyz.bluspring.systems.hms.role.patient.Patient;
 
 public class DoctorGUI extends JFrame {
 
@@ -153,13 +160,17 @@ public class DoctorGUI extends JFrame {
 
     private void addConsultationNote() {
 
-        String date = JOptionPane.showInputDialog(
-            this,
-            "Enter Date:"
-        );
+        Date date = null;
 
-        if (date == null) {
-            return;
+        while (date == null) {
+            try {
+                date = DateFormat.getDateInstance().parse(JOptionPane.showInputDialog(
+                    this,
+                    "Enter Date:"
+                ));
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Invalid date inserted!");
+            }
         }
 
         String notes = JOptionPane.showInputDialog(

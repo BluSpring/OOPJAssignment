@@ -1,8 +1,19 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
 import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.data.DataSerializable;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class VitalSign {
+public class VitalSign implements DataSerializable<VitalSign> {
+    public static final DataSerializer<VitalSign> SERIALIZER = RecordDataSerializer.of(
+        Patient.REFERENCE_SERIALIZER, VitalSign::getPatient,
+        DataSerializer.DOUBLE, VitalSign::getTemperature,
+        DataSerializer.INT, VitalSign::getHeartRate,
+        DataSerializer.INT, VitalSign::getBloodPressure,
+        DataSerializer.INT, VitalSign::getOxygenLevel,
+        VitalSign::new
+    );
 
     private final Patient patient;
     private double temperature;
@@ -21,6 +32,11 @@ public class VitalSign {
         this.heartRate = heartRate;
         this.bloodPressure = bloodPressure;
         this.oxygenLevel = oxygenLevel;
+    }
+
+    @Override
+    public DataSerializer<VitalSign> getSerializer() {
+        return SERIALIZER;
     }
 
     public Patient getPatient() {

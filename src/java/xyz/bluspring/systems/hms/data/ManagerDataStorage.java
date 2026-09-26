@@ -1,10 +1,12 @@
-package xyz.bluspring.systems.hms.role.manager;
+package xyz.bluspring.systems.hms.data;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.bluspring.systems.hms.role.manager.Department;
+import xyz.bluspring.systems.hms.role.manager.DoctorShift;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
 
 public class ManagerDataStorage {

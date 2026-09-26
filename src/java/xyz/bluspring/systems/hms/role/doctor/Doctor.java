@@ -1,12 +1,16 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import xyz.bluspring.systems.hms.data.DoctorDataStorage;
+import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
-import xyz.bluspring.systems.hms.role.RoleManager;
+import xyz.bluspring.systems.hms.role.patient.MedicalRecord;
 import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.role.patient.Prescription;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
@@ -23,25 +27,11 @@ public class Doctor extends PersonalizableUser<Doctor> {
     private String doctorId;
     private String specialization;
 
-    private final List<VitalSign> vitalSigns;
-    private final List<ConsultationNote> consultationNotes;
-    private final List<Prescription> prescriptions;
-    private final List<MedicalTestRequest> medicalTestRequests;
-
-    private final DoctorDataStorage storage;
-
     public Doctor(Profile profile, String doctorId, String specialization) {
         super(profile);
 
         this.doctorId = doctorId;
         this.specialization = specialization;
-
-        vitalSigns = new ArrayList<>();
-        consultationNotes = new ArrayList<>();
-        prescriptions = new ArrayList<>();
-        medicalTestRequests = new ArrayList<>();
-
-        storage = new DoctorDataStorage();
     }
 
     @Override
@@ -84,32 +74,24 @@ public class Doctor extends PersonalizableUser<Doctor> {
         int bloodPressure,
         int oxygenLevel) {
 
-        VitalSign vitalSign = new VitalSign(
-            patient,
-            temperature,
-            heartRate,
-            bloodPressure,
-            oxygenLevel
-        );
+        VitalSign vitalSign = new VitalSign(patient, temperature, heartRate, bloodPressure, oxygenLevel);
 
-        vitalSigns.add(vitalSign);
-        storage.saveVitalSign(vitalSign);
+        DoctorDataStorage.INSTANCE.saveVitalSign(vitalSign);
     }
 
     public void addConsultationNote(
         Patient patient,
-        String date,
+        Date date,
         String notes) {
 
         ConsultationNote note = new ConsultationNote(
-            patient.getPatientId(),
-            doctorId,
+            patient,
+            this,
             date,
             notes
         );
 
-        consultationNotes.add(note);
-        storage.saveConsultationNote(note);
+        DoctorDataStorage.INSTANCE.saveConsultationNote(note);
     }
 
     public void issuePrescription(
@@ -119,15 +101,16 @@ public class Doctor extends PersonalizableUser<Doctor> {
         String instructions) {
 
         Prescription prescription = new Prescription(
-            patient.getPatientId(),
-            doctorId,
+            new Date(),
+            this,
+            patient,
             medication,
             dosage,
             instructions
         );
 
-        prescriptions.add(prescription);
-        storage.savePrescription(prescription);
+        patient.addMedicalRecord(prescription);
+        RoleManager.INSTANCE.save();
     }
 
     public void requestMedicalTest(
@@ -136,31 +119,28 @@ public class Doctor extends PersonalizableUser<Doctor> {
         String reason) {
 
         MedicalTestRequest request = new MedicalTestRequest(
-            patient.getPatientId(),
-            doctorId,
+            patient,
+            this,
             testType,
             reason,
             "Pending"
         );
 
-        medicalTestRequests.add(request);
-        storage.saveMedicalTestRequest(request);
-    }
-
-    public List<VitalSign> getVitalSigns() {
-        return vitalSigns;
-    }
-
-    public List<ConsultationNote> getConsultationNotes() {
-        return consultationNotes;
+        DoctorDataStorage.INSTANCE.saveMedicalTestRequest(request);
     }
 
     public List<Prescription> getPrescriptions() {
-        return prescriptions;
-    }
+        List<Prescription> prescriptions = new ArrayList<>();
 
-    public List<MedicalTestRequest> getMedicalTestRequests() {
-        return medicalTestRequests;
+        for (Patient patient : RoleManager.INSTANCE.getPatients()) {
+            for (MedicalRecord record : patient.getMedicalRecords()) {
+                if (record instanceof Prescription prescription && prescription.getDoctor() == this) {
+                    prescriptions.add(prescription);
+                }
+            }
+        }
+
+        return prescriptions;
     }
 
     @Override

@@ -1,51 +1,50 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
+import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class MedicalTestRequest {
+public class MedicalTestRequest implements DataSerializable<MedicalTestRequest> {
     public static final DataSerializer<MedicalTestRequest> SERIALIZER = RecordDataSerializer.of(
-        DataSerializer.STRING, MedicalTestRequest::getPatientId,
-        DataSerializer.STRING, MedicalTestRequest::getDoctorId,
+        Patient.REFERENCE_SERIALIZER, MedicalTestRequest::getPatient,
+        Doctor.REFERENCE_SERIALIZER, MedicalTestRequest::getDoctor,
         DataSerializer.STRING, MedicalTestRequest::getTestType,
         DataSerializer.STRING, MedicalTestRequest::getReason,
         DataSerializer.STRING, MedicalTestRequest::getStatus,
         MedicalTestRequest::new
     );
 
-    private String patientId;
-    private String doctorId;
+    private final Patient patient;
+    private final Doctor doctor;
     private String testType;
     private String reason;
     private String status;
 
-    public MedicalTestRequest(String patientId,
-                              String doctorId,
+    public MedicalTestRequest(Patient patient,
+                              Doctor doctor,
                               String testType,
                               String reason,
                               String status) {
 
-        this.patientId = patientId;
-        this.doctorId = doctorId;
+        this.patient = patient;
+        this.doctor = doctor;
         this.testType = testType;
         this.reason = reason;
         this.status = status;
     }
 
-    public String getPatientId() {
-        return patientId;
+    @Override
+    public DataSerializer<MedicalTestRequest> getSerializer() {
+        return SERIALIZER;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public String getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-        this.doctorId = doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
     public String getTestType() {
@@ -74,8 +73,8 @@ public class MedicalTestRequest {
 
     @Override
     public String toString() {
-        return "Patient ID: " + patientId
-            + ", Doctor ID: " + doctorId
+        return "Patient ID: " + patient.getPatientId()
+            + ", Doctor ID: " + doctor.getDoctorId()
             + ", Test Type: " + testType
             + ", Reason: " + reason
             + ", Status: " + status;

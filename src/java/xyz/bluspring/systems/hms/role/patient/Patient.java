@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
-import xyz.bluspring.systems.hms.role.RoleManager;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;

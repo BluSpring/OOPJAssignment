@@ -2,6 +2,8 @@ package xyz.bluspring.systems.hms.role.manager;
 
 import java.util.List;
 import javax.swing.JPanel;
+
+import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
