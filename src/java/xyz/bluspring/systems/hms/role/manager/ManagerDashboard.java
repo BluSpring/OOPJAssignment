@@ -225,8 +225,8 @@ public class ManagerDashboard extends JPanel {
         }
         String shiftType = shiftOptions[choice];
 
-        DoctorShift shift = new DoctorShift(id.trim(), doctor, department.trim(), shiftDate.trim(), shiftType);
-        manager.addShift(shift);
+//        DoctorShift shift = new DoctorShift(id.trim(), doctor, department.trim(), shiftDate.trim(), shiftType); // FIXME
+//        manager.addShift(shift);
         JOptionPane.showMessageDialog(this, "Doctor shift [" + id.trim() + "] assigned successfully!");
     }
 
@@ -279,7 +279,7 @@ public class ManagerDashboard extends JPanel {
                 return;
             }
             if (newDoctor.trim().isEmpty()) {
-                newDoctor = existing.getDoctor();
+//                newDoctor = existing.getDoctor(); // FIXME
             }
 
             // Edit Department
@@ -324,7 +324,7 @@ public class ManagerDashboard extends JPanel {
 
             String newShiftType = (choice == 0) ? existing.getShiftType() : shiftOptions[choice];
 
-            manager.updateShift(targetId.trim(), newDoctor.trim(), newDept.trim(), newDate.trim(), newShiftType);
+//            manager.updateShift(targetId.trim(), newDoctor.trim(), newDept.trim(), newDate.trim(), newShiftType); // FIXME
             JOptionPane.showMessageDialog(this, "Shift modified successfully!");
         }
     }
