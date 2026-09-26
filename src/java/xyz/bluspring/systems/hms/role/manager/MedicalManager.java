@@ -13,16 +13,8 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
         MedicalManager::new
     );
 
-    private List<Department> departments;
-    private List<DoctorShift> doctorShifts;
-    private ManagerDataStorage storage;
-
     public MedicalManager(Profile profile) {
         super(profile);
-
-        this.storage = new ManagerDataStorage();
-        this.departments = storage.readDepartments();
-        this.doctorShifts = storage.readShifts();
     }
 
     @Override
@@ -38,13 +30,12 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
 
     // Add and save a new clinical department
     public void addDepartment(Department department) {
-        departments.add(department);
-        storage.saveDepartment(department);
+        ManagerDataStorage.INSTANCE.saveDepartment(department);
     }
 
     // Find department by its ID
     public Department getDepartmentById(String id) {
-        for (Department d : departments) {
+        for (Department d : ManagerDataStorage.INSTANCE.readDepartments()) {
             if (d.getId().equalsIgnoreCase(id.trim())) {
                 return d;
             }
@@ -54,11 +45,11 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
 
     // Update an existing department by its ID
     public boolean updateDepartment(String id, String newName, String newDescription) {
-        for (Department d : departments) {
+        for (Department d : ManagerDataStorage.INSTANCE.readDepartments()) {
             if (d.getId().equalsIgnoreCase(id.trim())) {
                 d.setDepartmentName(newName);
                 d.setDescription(newDescription);
-                storage.rewriteDepartments(departments);
+                ManagerDataStorage.INSTANCE.save();
                 return true;
             }
         }
@@ -66,18 +57,17 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
     }
 
     public List<Department> getDepartments() {
-        return departments;
+        return ManagerDataStorage.INSTANCE.readDepartments();
     }
 
     // Add and save a new doctor shift roster
     public void addShift(DoctorShift shift) {
-        doctorShifts.add(shift);
-        storage.saveShift(shift);
+        ManagerDataStorage.INSTANCE.saveShift(shift);
     }
 
     // Find doctor shift by its ID
     public DoctorShift getShiftById(String id) {
-        for (DoctorShift s : doctorShifts) {
+        for (DoctorShift s : ManagerDataStorage.INSTANCE.readShifts()) {
             if (s.getId().equalsIgnoreCase(id.trim())) {
                 return s;
             }
@@ -87,13 +77,13 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
 
     // Modify a doctor shift by its ID
     public boolean updateShift(String id, String newDoctorName, String newDepartment, String newDate, String newShiftType) {
-        for (DoctorShift s : doctorShifts) {
+        for (DoctorShift s : ManagerDataStorage.INSTANCE.readShifts()) {
             if (s.getId().equalsIgnoreCase(id.trim())) {
                 s.setDoctorName(newDoctorName);
                 s.setDepartmentName(newDepartment);
                 s.setShiftDate(newDate);
                 s.setShiftType(newShiftType);
-                storage.rewriteShifts(doctorShifts);
+                ManagerDataStorage.INSTANCE.save();
                 return true;
             }
         }
@@ -101,16 +91,16 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
     }
 
     public List<DoctorShift> getDoctorShifts() {
-        return doctorShifts;
+        return ManagerDataStorage.INSTANCE.readShifts();
     }
 
     public ManagerDataStorage getStorage() {
-        return storage;
+        return ManagerDataStorage.INSTANCE;
     }
 
     // Calculates estimated revenue based on total consultations and consultation rate
     public double calculateEstimatedRevenue(double baseRate) {
-        int consultations = storage.getConsultationCount();
+        int consultations = ManagerDataStorage.INSTANCE.getConsultationCount();
         return consultations * baseRate;
     }
 

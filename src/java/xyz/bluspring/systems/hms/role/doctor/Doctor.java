@@ -85,7 +85,7 @@ public class Doctor extends PersonalizableUser<Doctor> {
         int oxygenLevel) {
 
         VitalSign vitalSign = new VitalSign(
-            patient.getPatientId(),
+            patient,
             temperature,
             heartRate,
             bloodPressure,

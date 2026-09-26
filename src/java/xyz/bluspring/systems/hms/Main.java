@@ -12,10 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import xyz.bluspring.systems.hms.auth.Account;
-import xyz.bluspring.systems.hms.auth.AuthLog;
-import xyz.bluspring.systems.hms.role.manager.Department;
-import xyz.bluspring.systems.hms.role.manager.DoctorShift;
+import xyz.bluspring.systems.hms.role.RoleManager;
+import xyz.bluspring.systems.hms.role.manager.ManagerDataStorage;
 
 public class Main {
     public static final boolean IS_TESTING = false;
@@ -72,12 +70,9 @@ public class Main {
             }
         });
 
-        // Initialize data classes, just to make sure that their serializers are registered first.
-        Account.init();
-        AuthLog.init();
-        Department.init();
-        DoctorShift.init();
-        // TODO
+        // Initialize managers, make sure that data gets loaded.
+        RoleManager.INSTANCE.load();
+        ManagerDataStorage.INSTANCE.load();
 
         if (IS_TESTING) { // Add testing data
             System.out.println("Testing data enabled!");

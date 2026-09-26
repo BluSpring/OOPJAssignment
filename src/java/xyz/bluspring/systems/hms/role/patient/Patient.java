@@ -6,6 +6,7 @@ import java.util.List;
 
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
+import xyz.bluspring.systems.hms.role.RoleManager;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
@@ -25,6 +26,8 @@ public class Patient extends PersonalizableUser<Patient> {
         Rating.SERIALIZER.list(), Patient::getRatings,
         Patient::new
     );
+
+    public static final DataSerializer<Patient> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findPatientById, Patient::getPatientId);
 
     // Fields used by the Doctor role
     private String patientId;

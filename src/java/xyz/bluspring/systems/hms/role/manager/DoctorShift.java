@@ -4,7 +4,7 @@ import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class DoctorShift implements DataSerializable {
+public class DoctorShift implements DataSerializable<DoctorShift> {
     public static final DataSerializer<DoctorShift> SERIALIZER = RecordDataSerializer.of(
         DataSerializer.STRING, DoctorShift::getId,
         DataSerializer.STRING, DoctorShift::getDoctorName,
@@ -29,7 +29,7 @@ public class DoctorShift implements DataSerializable {
     }
 
     @Override
-    public DataSerializer<? extends DataSerializable> getSerializer() {
+    public DataSerializer<DoctorShift> getSerializer() {
         return SERIALIZER;
     }
 
@@ -76,8 +76,5 @@ public class DoctorShift implements DataSerializable {
     @Override
     public String toString() {
         return id + "," + doctorName + "," + departmentName + "," + shiftDate + "," + shiftType;
-    }
-
-    public static void init() {
     }
 }

@@ -10,6 +10,7 @@ public class Prescription extends MedicalRecord {
     public static final DataSerializer<Prescription> SERIALIZER = RecordDataSerializer.of(
         DataSerializer.DATE, Prescription::getDateIssued,
         Doctor.REFERENCE_SERIALIZER, Prescription::getDoctor,
+        Patient.REFERENCE_SERIALIZER, Prescription::getPatient,
         DataSerializer.STRING, Prescription::getMedicineName,
         DataSerializer.STRING, Prescription::getDosage,
         DataSerializer.STRING, Prescription::getNotes,
@@ -20,8 +21,8 @@ public class Prescription extends MedicalRecord {
     private String dosage;
     private String notes;
 
-    public Prescription(Date dateIssued, Doctor doctor, String medicineName, String dosage, String notes) {
-        super(dateIssued, doctor);
+    public Prescription(Date dateIssued, Doctor doctor, Patient patient, String medicineName, String dosage, String notes) {
+        super(dateIssued, doctor, patient);
         this.medicineName = medicineName;
         this.dosage = dosage;
         this.notes = notes;

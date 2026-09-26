@@ -54,4 +54,14 @@ public class RoleManager {
 
         return null;
     }
+
+    public Patient findPatientById(String id) {
+        for (Patient patient : patients) {
+            if (patient.getPatientId().equals(id)) {
+                return patient;
+            }
+        }
+
+        return null;
+    }
 }

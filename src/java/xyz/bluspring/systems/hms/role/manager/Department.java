@@ -49,7 +49,4 @@ public class Department {
     public String toString() {
         return id + "," + departmentName + "," + description;
     }
-
-    public static void init() {
-    }
 }

@@ -9,28 +9,26 @@ import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 public abstract class MedicalRecord implements DataSerializable<MedicalRecord> {
     public static final DataSerializer<MedicalRecord> SERIALIZER = Type.SERIALIZER.dispatch(Type::getSerializer, MedicalRecord::getType);
 
-    private Date dateIssued;
-    private Doctor doctor;
+    private final Date dateIssued;
+    private final Doctor doctor;
+    private final Patient patient;
 
-    public MedicalRecord(Date dateIssued, Doctor doctor) {
+    public MedicalRecord(Date dateIssued, Doctor doctor, Patient patient) {
         this.dateIssued = dateIssued;
         this.doctor = doctor;
+        this.patient = patient;
     }
 
     public Date getDateIssued() {
         return dateIssued;
     }
 
-    public void setDateIssued(Date dateIssued) {
-        this.dateIssued = dateIssued;
+    public Patient getPatient() {
+        return patient;
     }
 
     public Doctor getDoctor() {
         return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
     }
 
     protected String getDoctorName() {

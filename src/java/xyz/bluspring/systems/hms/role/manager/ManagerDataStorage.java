@@ -8,6 +8,8 @@ import java.util.List;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
 
 public class ManagerDataStorage {
+    public static final ManagerDataStorage INSTANCE = new ManagerDataStorage();
+
     private static final File DEPARTMENT_FILE = DataSerializers.getPath("departments.txt");
     private static final File ROSTER_FILE = DataSerializers.getPath("doctor_rosters.txt");
     private static final File CONSULTATION_NOTES_FILE = DataSerializers.getPath("consultation_notes.txt");
@@ -15,8 +17,7 @@ public class ManagerDataStorage {
     private final List<Department> departments = new ArrayList<>();
     private final List<DoctorShift> doctorShifts = new ArrayList<>();
 
-    public ManagerDataStorage() {
-        this.load();
+    private ManagerDataStorage() {
     }
 
     public void load() {
@@ -74,6 +75,7 @@ public class ManagerDataStorage {
             if (!CONSULTATION_NOTES_FILE.exists()) {
                 return 0;
             }
+
             return Files.readAllLines(CONSULTATION_NOTES_FILE.toPath()).size();
         } catch (Exception e) {
             return 0;

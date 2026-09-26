@@ -21,7 +21,7 @@ public class Rating {
     private int score; // 1-5
     private String comment;
     private Doctor doctor;
-    private Date dateSubmitted;
+    private final Date dateSubmitted;
 
     public Rating(int score, String comment, Doctor doctor, Date dateSubmitted) {
         if (score < 1 || score > 5) {
@@ -63,10 +63,6 @@ public class Rating {
 
     public Date getDateSubmitted() {
         return dateSubmitted;
-    }
-
-    public void setDateSubmitted(Date dateSubmitted) {
-        this.dateSubmitted = dateSubmitted;
     }
 
     @Override

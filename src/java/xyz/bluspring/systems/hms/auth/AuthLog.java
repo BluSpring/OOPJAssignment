@@ -39,7 +39,4 @@ public record AuthLog(
 
         public static final DataSerializer<Type> SERIALIZER = DataSerializer.fromEnum(Type.class);
     }
-
-    public static void init() {
-    }
 }

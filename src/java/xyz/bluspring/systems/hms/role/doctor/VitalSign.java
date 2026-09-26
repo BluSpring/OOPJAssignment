@@ -1,32 +1,30 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
+import xyz.bluspring.systems.hms.role.patient.Patient;
+
 public class VitalSign {
 
-    private String patientId;
+    private final Patient patient;
     private double temperature;
     private int heartRate;
     private int bloodPressure;
     private int oxygenLevel;
 
-    public VitalSign(String patientId,
+    public VitalSign(Patient patient,
                      double temperature,
                      int heartRate,
                      int bloodPressure,
                      int oxygenLevel) {
 
-        this.patientId = patientId;
+        this.patient = patient;
         this.temperature = temperature;
         this.heartRate = heartRate;
         this.bloodPressure = bloodPressure;
         this.oxygenLevel = oxygenLevel;
     }
 
-    public String getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public Patient getPatient() {
+        return patient;
     }
 
     public double getTemperature() {
@@ -63,7 +61,7 @@ public class VitalSign {
 
     @Override
     public String toString() {
-        return "Patient ID: " + patientId
+        return "Patient ID: " + patient.getPatientId()
             + ", Temperature: " + temperature
             + ", Heart Rate: " + heartRate
             + ", Blood Pressure: " + bloodPressure
