@@ -1,15 +1,32 @@
 package xyz.bluspring.systems.hms.role.patient;
 
+import java.util.Date;
+
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
 public class VisitNote extends MedicalRecord {
+    public static final DataSerializer<VisitNote> SERIALIZER = RecordDataSerializer.of(
+        DataSerializer.DATE, VisitNote::getDateIssued,
+        Doctor.REFERENCE_SERIALIZER, VisitNote::getDoctor,
+        DataSerializer.STRING, VisitNote::getReason,
+        DataSerializer.STRING, VisitNote::getDiagnosis,
+        VisitNote::new
+    );
+
     private String reason;
     private String diagnosis;
 
-    public VisitNote(String dateIssued, Doctor doctor, String reason, String diagnosis) {
+    public VisitNote(Date dateIssued, Doctor doctor, String reason, String diagnosis) {
         super(dateIssued, doctor);
         this.reason = reason;
         this.diagnosis = diagnosis;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.VISIT_NOTE;
     }
 
     public String getReason() {

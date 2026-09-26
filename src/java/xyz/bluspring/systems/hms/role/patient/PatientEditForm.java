@@ -1,7 +1,18 @@
 package xyz.bluspring.systems.hms.role.patient;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.text.DateFormat;
+import java.text.ParseException;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class PatientEditForm extends JPanel {
     private final Patient patient;
@@ -30,7 +41,7 @@ public class PatientEditForm extends JPanel {
             addressField.setText(patient.getProfile().getAddress());
         }
         if (patient.getDateOfBirth() != null) {
-            dobField.setText(patient.getDateOfBirth());
+            dobField.setText(DateFormat.getDateInstance().format(patient.getDateOfBirth()));
         }
         if (patient.getMedicalHistory() != null) {
             historyArea.setText(patient.getMedicalHistory());
@@ -65,7 +76,11 @@ public class PatientEditForm extends JPanel {
     public void save() {
         patient.getProfile().setDisplayName(nameField.getText());
         patient.getProfile().setAddress(addressField.getText());
-        patient.setDateOfBirth(dobField.getText());
+        try {
+            patient.setDateOfBirth(DateFormat.getDateInstance().parse(dobField.getText()));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         patient.setMedicalHistory(historyArea.getText());
     }
 }

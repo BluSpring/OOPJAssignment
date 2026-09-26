@@ -1,17 +1,33 @@
 package xyz.bluspring.systems.hms.role.patient;
 
+import java.util.Date;
+
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
 /**
  * A patient's rating and comment about a doctor or clinic visit.
  */
 public class Rating {
+    public static final DataSerializer<Rating> SERIALIZER = RecordDataSerializer.of(
+        DataSerializer.INT, Rating::getScore,
+        DataSerializer.STRING, Rating::getComment,
+        Doctor.REFERENCE_SERIALIZER, Rating::getDoctor,
+        DataSerializer.DATE, Rating::getDateSubmitted,
+        Rating::new
+    );
+
     private int score; // 1-5
     private String comment;
     private Doctor doctor;
-    private String dateSubmitted;
+    private Date dateSubmitted;
 
-    public Rating(int score, String comment, Doctor doctor, String dateSubmitted) {
+    public Rating(int score, String comment, Doctor doctor, Date dateSubmitted) {
+        if (score < 1 || score > 5) {
+            throw new IllegalArgumentException("Score must be between 1 and 5");
+        }
+
         this.score = score;
         this.comment = comment;
         this.doctor = doctor;
@@ -45,11 +61,11 @@ public class Rating {
         this.doctor = doctor;
     }
 
-    public String getDateSubmitted() {
+    public Date getDateSubmitted() {
         return dateSubmitted;
     }
 
-    public void setDateSubmitted(String dateSubmitted) {
+    public void setDateSubmitted(Date dateSubmitted) {
         this.dateSubmitted = dateSubmitted;
     }
 

@@ -1,12 +1,30 @@
 package xyz.bluspring.systems.hms.role.patient;
 
-import xyz.bluspring.systems.hms.role.PersonalizableUser;
-import xyz.bluspring.systems.hms.role.doctor.Doctor;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class Patient extends PersonalizableUser {
+import xyz.bluspring.systems.hms.role.PersonalizableUser;
+import xyz.bluspring.systems.hms.role.Profile;
+import xyz.bluspring.systems.hms.role.doctor.Doctor;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
+
+public class Patient extends PersonalizableUser<Patient> {
+    public static final DataSerializer<Patient> SERIALIZER = RecordDataSerializer.of(
+        Profile.SERIALIZER, Patient::getProfile,
+        DataSerializer.STRING, Patient::getPatientId,
+        DataSerializer.INT, Patient::getAge,
+        DataSerializer.STRING, Patient::getGender,
+        DataSerializer.STRING, Patient::getPhoneNumber,
+
+        DataSerializer.DATE, Patient::getDateOfBirth,
+        DataSerializer.STRING, Patient::getMedicalHistory,
+        Doctor.REFERENCE_SERIALIZER, Patient::getAssignedDoctor,
+        MedicalRecord.SERIALIZER.list(), Patient::getMedicalRecords,
+        Rating.SERIALIZER.list(), Patient::getRatings,
+        Patient::new
+    );
 
     // Fields used by the Doctor role
     private String patientId;
@@ -15,20 +33,32 @@ public class Patient extends PersonalizableUser {
     private String phoneNumber;
 
     // Fields used by the Patient role
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String medicalHistory;
     private Doctor assignedDoctor;
     private final List<MedicalRecord> medicalRecords = new ArrayList<>();
     private final List<Rating> ratings = new ArrayList<>();
 
-    public Patient() {
+    private Patient(Profile profile, String patientId, int age, String gender, String phoneNumber, Date dateOfBirth, String medicalHistory, Doctor assignedDoctor, List<MedicalRecord> records, List<Rating> ratings) {
+        this(profile, patientId, age, gender, phoneNumber);
+        this.dateOfBirth = dateOfBirth;
+        this.medicalHistory = medicalHistory;
+        this.assignedDoctor = assignedDoctor;
+        this.medicalRecords.addAll(records);
+        this.ratings.addAll(ratings);
     }
 
-    public Patient(String patientId, int age, String gender, String phoneNumber) {
+    public Patient(Profile profile, String patientId, int age, String gender, String phoneNumber) {
+        super(profile);
         this.patientId = patientId;
         this.age = age;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public DataSerializer<Patient> getSerializer() {
+        return SERIALIZER;
     }
 
     // --- Doctor-role fields ---
@@ -67,11 +97,11 @@ public class Patient extends PersonalizableUser {
 
     // --- Patient-role fields ---
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

@@ -2,55 +2,56 @@ package xyz.bluspring.systems.hms.utils.data;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DataSerializers {
-    private static final Map<String, DataSerializer<?>> serializers = new HashMap<>();
+    private static final Path DATA_PATH = Path.of("data");
 
-    public static DataSerializer<?> register(String name, DataSerializer<?> serializer) {
-        return serializers.put(name, serializer);
-    }
-
-    public static <T> DataSerializer<T> getSerializer(String name) {
-        return (DataSerializer<T>) serializers.get(name);
-    }
-
-    public static String getSerializerName(DataSerializer<?> serializer) {
-        for (String key : serializers.keySet()) {
-            var other = serializers.get(key);
-
-            if (other == serializer) {
-                return key;
+    public static File getPath(String name) {
+        if (!Files.exists(DATA_PATH)) {
+            try {
+                Files.createDirectories(DATA_PATH);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
-        return null;
+        return DATA_PATH.resolve(name).toFile();
     }
 
-    public static <T> DataSerializer<T> getSerializerFor(Class<T> clazz) {
-        for (DataSerializer<?> serializer : serializers.values()) {
-            if (serializer.getSerializableClass() == null) {
-                continue;
-            }
-
-            if (serializer.getSerializableClass().isAssignableFrom(clazz)) {
-                return (DataSerializer<T>) serializer;
-            }
-        }
-
-        return null;
-    }
-
-    public static <T> void serializeValues(Class<T> serializable, File file, List<T> list) {
+    public static <T extends DataSerializable<T>> void serializeValues(File file, List<T> list) {
         try {
-            var serializer = getSerializerFor(serializable);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
+            var lines = new ArrayList<String>();
+
+            for (T value : list) {
+                lines.add(value.getSerializer().serialize(value));
+            }
+
+            try (FileOutputStream stream = new FileOutputStream(file)) {
+                try (OutputStreamWriter streamWriter = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
+                    for (String line : lines) {
+                        streamWriter.write(line);
+                        streamWriter.write('\n');
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> void serializeValues(DataSerializer<T> serializer, File file, List<T> list) {
+        try {
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -74,10 +75,9 @@ public class DataSerializers {
         }
     }
 
-    public static <T> void deserializeLines(Class<T> serializable, File file, List<T> list) {
+    public static <T> void deserializeLines(DataSerializer<T> serializer, File file, List<T> list) {
         try {
             if (file.exists()) {
-                var serializer = getSerializerFor(serializable);
                 var lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
 
                 for (String line : lines) {

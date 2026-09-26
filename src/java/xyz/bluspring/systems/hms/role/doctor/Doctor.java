@@ -1,24 +1,38 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
-import xyz.bluspring.systems.hms.role.PersonalizableUser;
-import xyz.bluspring.systems.hms.role.patient.Patient;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Doctor extends PersonalizableUser {
+import xyz.bluspring.systems.hms.role.PersonalizableUser;
+import xyz.bluspring.systems.hms.role.Profile;
+import xyz.bluspring.systems.hms.role.RoleManager;
+import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
+
+public class Doctor extends PersonalizableUser<Doctor> {
+    public static final DataSerializer<Doctor> SERIALIZER = RecordDataSerializer.of(
+        Profile.SERIALIZER, Doctor::getProfile,
+        DataSerializer.STRING, Doctor::getDoctorId,
+        DataSerializer.STRING, Doctor::getSpecialization,
+        Doctor::new
+    );
+
+    public static final DataSerializer<Doctor> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findDoctorById, Doctor::getDoctorId);
 
     private String doctorId;
     private String specialization;
 
-    private List<VitalSign> vitalSigns;
-    private List<ConsultationNote> consultationNotes;
-    private List<Prescription> prescriptions;
-    private List<MedicalTestRequest> medicalTestRequests;
+    private final List<VitalSign> vitalSigns;
+    private final List<ConsultationNote> consultationNotes;
+    private final List<Prescription> prescriptions;
+    private final List<MedicalTestRequest> medicalTestRequests;
 
-    private DoctorDataStorage storage;
+    private final DoctorDataStorage storage;
 
-    public Doctor(String doctorId, String specialization) {
+    public Doctor(Profile profile, String doctorId, String specialization) {
+        super(profile);
+
         this.doctorId = doctorId;
         this.specialization = specialization;
 
@@ -28,6 +42,11 @@ public class Doctor extends PersonalizableUser {
         medicalTestRequests = new ArrayList<>();
 
         storage = new DoctorDataStorage();
+    }
+
+    @Override
+    public DataSerializer<Doctor> getSerializer() {
+        return SERIALIZER;
     }
 
     public String getDoctorId() {

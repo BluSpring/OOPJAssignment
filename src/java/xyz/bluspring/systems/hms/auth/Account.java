@@ -2,11 +2,19 @@ package xyz.bluspring.systems.hms.auth;
 
 import java.util.UUID;
 
-import xyz.bluspring.systems.hms.utils.Utils;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
-import xyz.bluspring.systems.hms.utils.data.DataSerializers;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
 public class Account {
+    public static final DataSerializer<Account> SERIALIZER = RecordDataSerializer.of(
+        AccountType.SERIALIZER, Account::getAccountType,
+        DataSerializer.UUID_SERIALIZER, Account::getUUID,
+        DataSerializer.STRING, Account::getEmail,
+        DataSerializer.STRING, Account::getDisplayName,
+        DataSerializer.STRING, Account::getPasswordHash,
+        Account::new
+    );
+
     private final AccountType accountType;
     private final UUID uuid;
     private String email;
@@ -51,27 +59,6 @@ public class Account {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-
-    public static class Serializer extends DataSerializer<Account> {
-        public Serializer() {
-            super(Account.class);
-        }
-
-        @Override
-        public String serialize(Account value) {
-            return DataSerializers.writeSegmentedLine(Utils.allToStrings(value.getAccountType().name(), value.getUUID(), value.getEmail(), value.getDisplayName(), value.getPasswordHash()));
-        }
-
-        @Override
-        public Account deserialize(String data) {
-            var split = DataSerializers.readSegmentedLine(data);
-            return new Account(AccountType.valueOf(split.get(0)), UUID.fromString(split.get(1)), split.get(2), split.get(3), split.get(4));
-        }
-    }
-
-    static {
-        DataSerializers.register("account", new Account.Serializer());
     }
 
     public static void init() {

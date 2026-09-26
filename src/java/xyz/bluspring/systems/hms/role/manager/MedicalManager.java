@@ -3,16 +3,31 @@ package xyz.bluspring.systems.hms.role.manager;
 import java.util.List;
 import javax.swing.JPanel;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
+import xyz.bluspring.systems.hms.role.Profile;
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class MedicalManager extends PersonalizableUser {
+public class MedicalManager extends PersonalizableUser<MedicalManager> {
+    public static final DataSerializer<MedicalManager> SERIALIZER = RecordDataSerializer.of(
+        Profile.SERIALIZER, MedicalManager::getProfile,
+        MedicalManager::new
+    );
+
     private List<Department> departments;
     private List<DoctorShift> doctorShifts;
     private ManagerDataStorage storage;
 
-    public MedicalManager() {
+    public MedicalManager(Profile profile) {
+        super(profile);
+
         this.storage = new ManagerDataStorage();
         this.departments = storage.readDepartments();
         this.doctorShifts = storage.readShifts();
+    }
+
+    @Override
+    public DataSerializer<MedicalManager> getSerializer() {
+        return SERIALIZER;
     }
 
     // Updates manager profile details

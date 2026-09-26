@@ -1,6 +1,17 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
+import xyz.bluspring.systems.hms.utils.data.DataSerializer;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
+
 public class MedicalTestRequest {
+    public static final DataSerializer<MedicalTestRequest> SERIALIZER = RecordDataSerializer.of(
+        DataSerializer.STRING, MedicalTestRequest::getPatientId,
+        DataSerializer.STRING, MedicalTestRequest::getDoctorId,
+        DataSerializer.STRING, MedicalTestRequest::getTestType,
+        DataSerializer.STRING, MedicalTestRequest::getReason,
+        DataSerializer.STRING, MedicalTestRequest::getStatus,
+        MedicalTestRequest::new
+    );
 
     private String patientId;
     private String doctorId;

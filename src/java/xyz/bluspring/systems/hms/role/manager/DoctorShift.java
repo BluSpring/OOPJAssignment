@@ -1,10 +1,19 @@
 package xyz.bluspring.systems.hms.role.manager;
 
-import xyz.bluspring.systems.hms.utils.Utils;
+import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
-import xyz.bluspring.systems.hms.utils.data.DataSerializers;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class DoctorShift {
+public class DoctorShift implements DataSerializable {
+    public static final DataSerializer<DoctorShift> SERIALIZER = RecordDataSerializer.of(
+        DataSerializer.STRING, DoctorShift::getId,
+        DataSerializer.STRING, DoctorShift::getDoctorName,
+        DataSerializer.STRING, DoctorShift::getDepartmentName,
+        DataSerializer.STRING, DoctorShift::getShiftDate,
+        DataSerializer.STRING, DoctorShift::getShiftType,
+        DoctorShift::new
+    );
+
     private String id;
     private String doctorName;
     private String departmentName;
@@ -17,6 +26,11 @@ public class DoctorShift {
         this.departmentName = departmentName;
         this.shiftDate = shiftDate;
         this.shiftType = shiftType;
+    }
+
+    @Override
+    public DataSerializer<? extends DataSerializable> getSerializer() {
+        return SERIALIZER;
     }
 
     public String getId() {
@@ -62,28 +76,6 @@ public class DoctorShift {
     @Override
     public String toString() {
         return id + "," + doctorName + "," + departmentName + "," + shiftDate + "," + shiftType;
-    }
-
-    // Serializer for reading and writing doctor shift data
-    public static class Serializer extends DataSerializer<DoctorShift> {
-        public Serializer() {
-            super(DoctorShift.class);
-        }
-
-        @Override
-        public String serialize(DoctorShift value) {
-            return DataSerializers.writeSegmentedLine(Utils.allToStrings(value.getId(), value.getDoctorName(), value.getDepartmentName(), value.getShiftDate(), value.getShiftType()));
-        }
-
-        @Override
-        public DoctorShift deserialize(String data) {
-            var split = DataSerializers.readSegmentedLine(data);
-            return new DoctorShift(split.get(0), split.get(1), split.get(2), split.get(3), split.get(4));
-        }
-    }
-
-    static {
-        DataSerializers.register("doctor_shift", new Serializer());
     }
 
     public static void init() {

@@ -1,8 +1,13 @@
 package xyz.bluspring.systems.hms.role;
 
-public abstract class PersonalizableUser {
+import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 
-    private final Profile profile = new Profile();
+public abstract class PersonalizableUser<T extends PersonalizableUser<T>> implements DataSerializable<T> {
+    private final Profile profile;
+
+    public PersonalizableUser(Profile profile) {
+        this.profile = profile;
+    }
 
     public Profile getProfile() {
         return profile;

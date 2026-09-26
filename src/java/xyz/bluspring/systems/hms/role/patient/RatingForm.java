@@ -1,11 +1,19 @@
 package xyz.bluspring.systems.hms.role.patient;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.Date;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import xyz.bluspring.systems.hms.ui.ComponentHelper;
 import xyz.bluspring.systems.hms.ui.ListenableTextArea;
-import xyz.bluspring.systems.hms.utils.Utils;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Lets a patient submit a rating and comment about their assigned doctor.
@@ -53,7 +61,7 @@ public class RatingForm extends JPanel {
 
         int score = (int) scoreSelector.getSelectedItem();
         String comment = commentArea.getText();
-        String today = Utils.getDateTimeString(System.currentTimeMillis());
+        Date today = new Date();
 
         Rating rating = new Rating(score, comment, patient.getAssignedDoctor(), today);
         patient.addRating(rating);

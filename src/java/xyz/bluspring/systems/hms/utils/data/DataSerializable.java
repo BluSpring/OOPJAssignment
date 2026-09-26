@@ -1,7 +1,5 @@
 package xyz.bluspring.systems.hms.utils.data;
 
-public interface DataSerializable {
-    void load();
-
-    void save();
+public interface DataSerializable<T extends DataSerializable<T>> {
+    DataSerializer<T> getSerializer();
 }

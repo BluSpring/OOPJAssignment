@@ -13,10 +13,9 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import xyz.bluspring.systems.hms.utils.ByteArrayUtils;
-import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
 
-public class AuthManager implements Iterable<Account>, DataSerializable {
+public class AuthManager implements Iterable<Account> {
     // Regular expression pattern for defining emails, which was officially provided by RFC 5322.
     private static final Pattern EMAIL_REGEX = Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 
@@ -66,19 +65,17 @@ public class AuthManager implements Iterable<Account>, DataSerializable {
         return this.authLogs.iterator();
     }
 
-    @Override
     public void load() {
         accounts.clear();
         authLogs.clear();
 
-        DataSerializers.deserializeLines(Account.class, accountFile, accounts);
-        DataSerializers.deserializeLines(AuthLog.class, authLogsFile, authLogs);
+        DataSerializers.deserializeLines(Account.SERIALIZER, accountFile, accounts);
+        DataSerializers.deserializeLines(AuthLog.SERIALIZER, authLogsFile, authLogs);
     }
 
-    @Override
     public void save() {
-        DataSerializers.serializeValues(Account.class, accountFile, accounts);
-        DataSerializers.serializeValues(AuthLog.class, authLogsFile, authLogs);
+        DataSerializers.serializeValues(Account.SERIALIZER, accountFile, accounts);
+        DataSerializers.serializeValues(AuthLog.SERIALIZER, authLogsFile, authLogs);
     }
 
     public Account getAccountByEmail(String email) {

@@ -14,13 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import xyz.bluspring.systems.hms.utils.Utils;
+
 public class ManagerDashboard extends JPanel {
     private MedicalManager manager;
     private JLabel infoLabel;
-
-    public ManagerDashboard() {
-        this(new MedicalManager());
-    }
 
     public ManagerDashboard(MedicalManager manager) {
         this.manager = manager;
@@ -344,8 +342,8 @@ public class ManagerDashboard extends JPanel {
             + "Total Clinical Departments: " + totalDepartments + "\n"
             + "Total Scheduled Doctor Shifts: " + totalShifts + "\n"
             + "Total Logged Consultations: " + totalConsultations + "\n\n"
-            + "Standard Consultation Rate: " + xyz.bluspring.systems.hms.utils.Utils.formatCurrency(baseConsultationRate) + "\n"
-            + "Estimated Consultation Revenue: " + xyz.bluspring.systems.hms.utils.Utils.formatCurrency(estimatedRevenue) + "\n\n"
+            + "Standard Consultation Rate: " + Utils.formatCurrency(baseConsultationRate) + "\n"
+            + "Estimated Consultation Revenue: " + Utils.formatCurrency(estimatedRevenue) + "\n\n"
             + "Status: All hospital operational records up to date.";
 
         JOptionPane.showMessageDialog(

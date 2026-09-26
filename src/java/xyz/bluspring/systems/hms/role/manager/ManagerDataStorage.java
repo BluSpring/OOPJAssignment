@@ -2,47 +2,34 @@ package xyz.bluspring.systems.hms.role.manager;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import xyz.bluspring.systems.hms.utils.data.DataSerializable;
+
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
 
-public class ManagerDataStorage implements DataSerializable {
-    private static final String DATA_FOLDER = "data";
-    private final File departmentFile = new File(DATA_FOLDER + File.separator + "departments.txt");
-    private final File rosterFile = new File(DATA_FOLDER + File.separator + "doctor_rosters.txt");
-    private static final String CONSULTATION_NOTES_FILE = DATA_FOLDER + File.separator + "consultation_notes.txt";
+public class ManagerDataStorage {
+    private static final File DEPARTMENT_FILE = DataSerializers.getPath("departments.txt");
+    private static final File ROSTER_FILE = DataSerializers.getPath("doctor_rosters.txt");
+    private static final File CONSULTATION_NOTES_FILE = DataSerializers.getPath("consultation_notes.txt");
 
     private final List<Department> departments = new ArrayList<>();
     private final List<DoctorShift> doctorShifts = new ArrayList<>();
 
     public ManagerDataStorage() {
-        createDataFolder();
         this.load();
     }
 
-    // creates the data folder if it does not exist already.
-    private void createDataFolder() {
-        File folder = new File(DATA_FOLDER);
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-    }
-
-    @Override
     public void load() {
         departments.clear();
         doctorShifts.clear();
 
-        DataSerializers.deserializeLines(Department.class, departmentFile, departments);
-        DataSerializers.deserializeLines(DoctorShift.class, rosterFile, doctorShifts);
+        DataSerializers.deserializeLines(Department.SERIALIZER, DEPARTMENT_FILE, departments);
+        DataSerializers.deserializeLines(DoctorShift.SERIALIZER, ROSTER_FILE, doctorShifts);
     }
 
-    @Override
     public void save() {
-        DataSerializers.serializeValues(Department.class, departmentFile, departments);
-        DataSerializers.serializeValues(DoctorShift.class, rosterFile, doctorShifts);
+        DataSerializers.serializeValues(Department.SERIALIZER, DEPARTMENT_FILE, departments);
+        DataSerializers.serializeValues(DoctorShift.SERIALIZER, ROSTER_FILE, doctorShifts);
     }
 
     // Saves the department to departments.txt file.
@@ -84,11 +71,10 @@ public class ManagerDataStorage implements DataSerializable {
     // Count total consultations from doctor file for metrics
     public int getConsultationCount() {
         try {
-            Path path = Path.of(CONSULTATION_NOTES_FILE);
-            if (!Files.exists(path)) {
+            if (!CONSULTATION_NOTES_FILE.exists()) {
                 return 0;
             }
-            return Files.readAllLines(path).size();
+            return Files.readAllLines(CONSULTATION_NOTES_FILE.toPath()).size();
         } catch (Exception e) {
             return 0;
         }

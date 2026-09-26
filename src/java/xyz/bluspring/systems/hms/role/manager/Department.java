@@ -1,10 +1,16 @@
 package xyz.bluspring.systems.hms.role.manager;
 
-import xyz.bluspring.systems.hms.utils.Utils;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
-import xyz.bluspring.systems.hms.utils.data.DataSerializers;
+import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
 public class Department {
+    public static final DataSerializer<Department> SERIALIZER = RecordDataSerializer.of(
+        DataSerializer.STRING, Department::getId,
+        DataSerializer.STRING, Department::getDepartmentName,
+        DataSerializer.STRING, Department::getDescription,
+        Department::new
+    );
+
     private String id;
     private String departmentName;
     private String description;
@@ -42,28 +48,6 @@ public class Department {
     @Override
     public String toString() {
         return id + "," + departmentName + "," + description;
-    }
-
-    // Serializer for reading and writing department data
-    public static class Serializer extends DataSerializer<Department> {
-        public Serializer() {
-            super(Department.class);
-        }
-
-        @Override
-        public String serialize(Department value) {
-            return DataSerializers.writeSegmentedLine(Utils.allToStrings(value.getId(), value.getDepartmentName(), value.getDescription()));
-        }
-
-        @Override
-        public Department deserialize(String data) {
-            var split = DataSerializers.readSegmentedLine(data);
-            return new Department(split.get(0), split.get(1), split.get(2));
-        }
-    }
-
-    static {
-        DataSerializers.register("department", new Serializer());
     }
 
     public static void init() {
