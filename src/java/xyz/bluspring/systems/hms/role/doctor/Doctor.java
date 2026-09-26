@@ -17,20 +17,17 @@ import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 public class Doctor extends PersonalizableUser<Doctor> {
     public static final DataSerializer<Doctor> SERIALIZER = RecordDataSerializer.of(
         Profile.SERIALIZER, Doctor::getProfile,
-        DataSerializer.STRING, Doctor::getDoctorId,
         DataSerializer.STRING, Doctor::getSpecialization,
         Doctor::new
     );
 
     public static final DataSerializer<Doctor> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findDoctorById, Doctor::getDoctorId);
 
-    private String doctorId;
     private String specialization;
 
-    public Doctor(Profile profile, String doctorId, String specialization) {
+    public Doctor(Profile profile, String specialization) {
         super(profile);
 
-        this.doctorId = doctorId;
         this.specialization = specialization;
     }
 
@@ -40,11 +37,7 @@ public class Doctor extends PersonalizableUser<Doctor> {
     }
 
     public String getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-        this.doctorId = doctorId;
+        return this.getProfile().getId().toString();
     }
 
     public String getSpecialization() {

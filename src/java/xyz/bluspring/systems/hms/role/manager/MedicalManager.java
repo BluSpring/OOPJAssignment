@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
+import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
@@ -78,10 +79,10 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
     }
 
     // Modify a doctor shift by its ID
-    public boolean updateShift(String id, String newDoctorName, String newDepartment, String newDate, String newShiftType) {
+    public boolean updateShift(String id, Doctor doctor, String newDepartment, String newDate, String newShiftType) {
         for (DoctorShift s : ManagerDataStorage.INSTANCE.readShifts()) {
             if (s.getId().equalsIgnoreCase(id.trim())) {
-                s.setDoctorName(newDoctorName);
+                s.setDoctor(doctor);
                 s.setDepartmentName(newDepartment);
                 s.setShiftDate(newDate);
                 s.setShiftType(newShiftType);

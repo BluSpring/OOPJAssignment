@@ -48,11 +48,6 @@ public class ManagerDataStorage {
         return departments;
     }
 
-    // Overwrite the departments file when updated
-    public void rewriteDepartments(List<Department> departments) {
-        this.save();
-    }
-
     // Save a new doctor shift roster to file
     public void saveShift(DoctorShift shift) {
         if (!doctorShifts.contains(shift)) {
@@ -64,11 +59,6 @@ public class ManagerDataStorage {
     // Read all shifts from memory (loaded from file)
     public List<DoctorShift> readShifts() {
         return doctorShifts;
-    }
-
-    // Overwrite the shifts file when modified
-    public void rewriteShifts(List<DoctorShift> shifts) {
-        this.save();
     }
 
     // Count total consultations from doctor file for metrics

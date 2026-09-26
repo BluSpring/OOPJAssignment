@@ -1,5 +1,6 @@
 package xyz.bluspring.systems.hms.role.manager;
 
+import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
@@ -7,7 +8,7 @@ import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 public class DoctorShift implements DataSerializable<DoctorShift> {
     public static final DataSerializer<DoctorShift> SERIALIZER = RecordDataSerializer.of(
         DataSerializer.STRING, DoctorShift::getId,
-        DataSerializer.STRING, DoctorShift::getDoctorName,
+        Doctor.REFERENCE_SERIALIZER, DoctorShift::getDoctor,
         DataSerializer.STRING, DoctorShift::getDepartmentName,
         DataSerializer.STRING, DoctorShift::getShiftDate,
         DataSerializer.STRING, DoctorShift::getShiftType,
@@ -15,14 +16,14 @@ public class DoctorShift implements DataSerializable<DoctorShift> {
     );
 
     private String id;
-    private String doctorName;
+    private Doctor doctor;
     private String departmentName;
     private String shiftDate;
     private String shiftType;
 
-    public DoctorShift(String id, String doctorName, String departmentName, String shiftDate, String shiftType) {
+    public DoctorShift(String id, Doctor doctor, String departmentName, String shiftDate, String shiftType) {
         this.id = id;
-        this.doctorName = doctorName;
+        this.doctor = doctor;
         this.departmentName = departmentName;
         this.shiftDate = shiftDate;
         this.shiftType = shiftType;
@@ -41,12 +42,12 @@ public class DoctorShift implements DataSerializable<DoctorShift> {
         this.id = id;
     }
 
-    public String getDoctorName() {
-        return doctorName;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorName(String doctorName) {
-        this.doctorName = doctorName;
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
     public String getDepartmentName() {
@@ -75,6 +76,6 @@ public class DoctorShift implements DataSerializable<DoctorShift> {
 
     @Override
     public String toString() {
-        return id + "," + doctorName + "," + departmentName + "," + shiftDate + "," + shiftType;
+        return id + "," + doctor.getDoctorId() + "," + departmentName + "," + shiftDate + "," + shiftType;
     }
 }

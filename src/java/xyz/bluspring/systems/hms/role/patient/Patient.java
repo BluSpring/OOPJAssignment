@@ -14,7 +14,6 @@ import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 public class Patient extends PersonalizableUser<Patient> {
     public static final DataSerializer<Patient> SERIALIZER = RecordDataSerializer.of(
         Profile.SERIALIZER, Patient::getProfile,
-        DataSerializer.STRING, Patient::getPatientId,
         DataSerializer.INT, Patient::getAge,
         DataSerializer.STRING, Patient::getGender,
         DataSerializer.STRING, Patient::getPhoneNumber,
@@ -30,7 +29,6 @@ public class Patient extends PersonalizableUser<Patient> {
     public static final DataSerializer<Patient> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findPatientById, Patient::getPatientId);
 
     // Fields used by the Doctor role
-    private String patientId;
     private int age;
     private String gender;
     private String phoneNumber;
@@ -42,8 +40,8 @@ public class Patient extends PersonalizableUser<Patient> {
     private final List<MedicalRecord> medicalRecords = new ArrayList<>();
     private final List<Rating> ratings = new ArrayList<>();
 
-    private Patient(Profile profile, String patientId, int age, String gender, String phoneNumber, Date dateOfBirth, String medicalHistory, Doctor assignedDoctor, List<MedicalRecord> records, List<Rating> ratings) {
-        this(profile, patientId, age, gender, phoneNumber);
+    private Patient(Profile profile, int age, String gender, String phoneNumber, Date dateOfBirth, String medicalHistory, Doctor assignedDoctor, List<MedicalRecord> records, List<Rating> ratings) {
+        this(profile, age, gender, phoneNumber);
         this.dateOfBirth = dateOfBirth;
         this.medicalHistory = medicalHistory;
         this.assignedDoctor = assignedDoctor;
@@ -51,9 +49,8 @@ public class Patient extends PersonalizableUser<Patient> {
         this.ratings.addAll(ratings);
     }
 
-    public Patient(Profile profile, String patientId, int age, String gender, String phoneNumber) {
+    public Patient(Profile profile, int age, String gender, String phoneNumber) {
         super(profile);
-        this.patientId = patientId;
         this.age = age;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
@@ -67,11 +64,7 @@ public class Patient extends PersonalizableUser<Patient> {
     // --- Doctor-role fields ---
 
     public String getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+        return this.getProfile().getId().toString();
     }
 
     public int getAge() {
@@ -157,7 +150,7 @@ public class Patient extends PersonalizableUser<Patient> {
     }
 
     public void displayPatientInfo() {
-        System.out.println("Patient ID: " + patientId);
+        System.out.println("Patient ID: " + this.getPatientId());
         System.out.println("Age: " + age);
         System.out.println("Gender: " + gender);
         System.out.println("Phone Number: " + phoneNumber);
@@ -165,7 +158,7 @@ public class Patient extends PersonalizableUser<Patient> {
 
     public void displayProfile() {
         System.out.println("===== PATIENT PROFILE =====");
-        System.out.println("Patient ID: " + patientId);
+        System.out.println("Patient ID: " + this.getPatientId());
         System.out.println("Name: " + getProfile().getDisplayName());
         System.out.println("Address: " + getProfile().getAddress());
         System.out.println("Age: " + age);

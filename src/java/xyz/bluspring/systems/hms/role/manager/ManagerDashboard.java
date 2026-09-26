@@ -225,7 +225,7 @@ public class ManagerDashboard extends JPanel {
         }
         String shiftType = shiftOptions[choice];
 
-        DoctorShift shift = new DoctorShift(id.trim(), doctorName.trim(), department.trim(), shiftDate.trim(), shiftType);
+        DoctorShift shift = new DoctorShift(id.trim(), doctor, department.trim(), shiftDate.trim(), shiftType);
         manager.addShift(shift);
         JOptionPane.showMessageDialog(this, "Doctor shift [" + id.trim() + "] assigned successfully!");
     }
@@ -243,7 +243,7 @@ public class ManagerDashboard extends JPanel {
         sb.append("----------------------------------------------------------------------\n");
         for (DoctorShift s : list) {
             sb.append(s.getId()).append(" | ")
-              .append(s.getDoctorName()).append(" | ")
+                .append(s.getDoctor()).append(" | ")
               .append(s.getDepartmentName()).append(" | ")
               .append(s.getShiftDate()).append(" | ")
               .append(s.getShiftType()).append("\n");
@@ -274,12 +274,12 @@ public class ManagerDashboard extends JPanel {
             }
 
             // Edit Doctor Name
-            String newDoctor = JOptionPane.showInputDialog(this, "Enter Doctor Name (leave as is to keep):", existing.getDoctorName());
+            String newDoctor = JOptionPane.showInputDialog(this, "Enter Doctor Name (leave as is to keep):", existing.getDoctor());
             if (newDoctor == null) {
                 return;
             }
             if (newDoctor.trim().isEmpty()) {
-                newDoctor = existing.getDoctorName();
+                newDoctor = existing.getDoctor();
             }
 
             // Edit Department
