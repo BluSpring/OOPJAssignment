@@ -1,6 +1,11 @@
 package xyz.bluspring.systems.hms;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,6 +14,8 @@ import javax.swing.WindowConstants;
 
 import xyz.bluspring.systems.hms.auth.Account;
 import xyz.bluspring.systems.hms.auth.AuthLog;
+import xyz.bluspring.systems.hms.role.manager.Department;
+import xyz.bluspring.systems.hms.role.manager.DoctorShift;
 
 public class Main {
     public static final boolean IS_TESTING = false;
@@ -68,8 +75,8 @@ public class Main {
         // Initialize data classes, just to make sure that their serializers are registered first.
         Account.init();
         AuthLog.init();
-        xyz.bluspring.systems.hms.role.manager.Department.init();
-        xyz.bluspring.systems.hms.role.manager.DoctorShift.init();
+        Department.init();
+        DoctorShift.init();
         // TODO
 
         if (IS_TESTING) { // Add testing data
