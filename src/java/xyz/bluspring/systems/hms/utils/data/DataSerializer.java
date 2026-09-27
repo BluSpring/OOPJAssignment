@@ -49,7 +49,7 @@ public abstract class DataSerializer<T> {
                 return value;
             } catch (Throwable e) {
                 System.err.printf("Failed to decode value \"%s\", using default value instead.\n", data);
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 return defaultValue.get();
             }
         });
@@ -90,7 +90,7 @@ public abstract class DataSerializer<T> {
             }
 
             return list;
-        });
+        }).orElse(ArrayList::new);
     }
 
     public static <T> DataSerializer<T> of(Function<T, String> encoder, Function<String, T> decoder) {
@@ -102,7 +102,13 @@ public abstract class DataSerializer<T> {
 
             @Override
             public T deserialize(String data) {
-                return decoder.apply(data);
+                try {
+                    return decoder.apply(data);
+                } catch (Exception e) {
+                    System.err.println("Failed to deserialize \"" + data + "\", returning default value instead.");
+                    e.printStackTrace(System.err);
+                    return null;
+                }
             }
         };
     }

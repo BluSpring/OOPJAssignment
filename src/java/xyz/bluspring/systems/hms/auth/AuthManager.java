@@ -46,8 +46,8 @@ public class AuthManager implements Iterable<Account> {
     public AuthManager(AccountType type) {
         this.type = type;
 
-        this.accountFile = new File(type.name().toLowerCase(Locale.ROOT) + "_accounts.txt");
-        this.authLogsFile = new File(type.name().toLowerCase(Locale.ROOT) + "_auth_logs.txt");
+        this.accountFile = DataSerializers.getPath(type.name().toLowerCase(Locale.ROOT) + "_accounts.txt");
+        this.authLogsFile = DataSerializers.getPath(type.name().toLowerCase(Locale.ROOT) + "_auth_logs.txt");
 
         this.load();
     }

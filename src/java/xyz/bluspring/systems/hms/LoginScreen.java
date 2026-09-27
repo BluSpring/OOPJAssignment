@@ -1,5 +1,28 @@
 package xyz.bluspring.systems.hms;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+
 import xyz.bluspring.systems.hms.auth.Account;
 import xyz.bluspring.systems.hms.auth.AccountType;
 import xyz.bluspring.systems.hms.auth.AuthManager;
@@ -8,12 +31,11 @@ import xyz.bluspring.systems.hms.role.Profile;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.role.doctor.DoctorGUI;
 import xyz.bluspring.systems.hms.role.manager.MedicalManager;
-import xyz.bluspring.systems.hms.role.patient.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.EnumMap;
-import java.util.Map;
+import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.role.patient.PatientDashboard;
+import xyz.bluspring.systems.hms.role.patient.PatientEditForm;
+import xyz.bluspring.systems.hms.role.patient.PatientRecordsPanel;
+import xyz.bluspring.systems.hms.role.patient.RatingForm;
 
 /**
  * The screen shown on startup, letting a user log in or register,
@@ -23,10 +45,12 @@ public class LoginScreen extends JPanel {
     // One AuthManager per account type, since accounts are stored separately per type.
     private static final Map<AccountType, AuthManager> AUTH_MANAGERS = new EnumMap<>(AccountType.class);
 
-    static {
-        for (AccountType type : AccountType.values()) {
-            AUTH_MANAGERS.put(type, new AuthManager(type));
-        }
+    public static AuthManager getAuthManager(AccountType type) {
+        return AUTH_MANAGERS.computeIfAbsent(type, t -> {
+            AuthManager manager = new AuthManager(t);
+            manager.load();
+            return manager;
+        });
     }
 
     /**
@@ -37,6 +61,7 @@ public class LoginScreen extends JPanel {
     private static JLabel label(String text) {
         var label = new JLabel(text);
         label.setForeground(Color.BLACK);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -50,7 +75,9 @@ public class LoginScreen extends JPanel {
         var title = label("Hospital Management System - Login");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        roleSelector = new JComboBox<>(AccountType.values());
+        List<AccountType> types = new ArrayList<>(List.of(AccountType.values()));
+        Collections.reverse(types);
+        roleSelector = new JComboBox<>(types.toArray(new AccountType[0]));
         emailField = new JTextField();
         passwordField = new JPasswordField();
 
@@ -67,7 +94,7 @@ public class LoginScreen extends JPanel {
         registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         loginButton.addActionListener(e -> login());
-        registerButton.addActionListener(e -> openRegisterDialog());
+        registerButton.addActionListener(e -> openRegisterScreen());
 
         var typeLabel = label("Account Type:");
         var emailLabel = label("Email:");
@@ -96,7 +123,7 @@ public class LoginScreen extends JPanel {
         var password = new String(passwordField.getPassword());
 
         try {
-            Account account = AUTH_MANAGERS.get(type).login(email, password);
+            Account account = getAuthManager(type).login(email, password);
             routeToDashboard(type, account);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
@@ -174,24 +201,27 @@ public class LoginScreen extends JPanel {
         );
     }
 
-    private void showOnWindow(javax.swing.JComponent component) {
+    private void showOnWindow(JComponent component) {
+        Main.reset();
         JFrame frame = Main.getFrame();
-        frame.getContentPane().removeAll();
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(component, BorderLayout.CENTER);
         Main.resetSizesToSmallWindow();
         Main.refresh();
     }
 
-    private void openRegisterDialog() {
-        new RegisterDialog(this).setVisible(true);
+    private void openRegisterScreen() {
+        Main.reset();
+        var dialog = new RegisterScreen();
+        Main.getFrame().getContentPane().add(dialog);
+        Main.refresh();
     }
 
     /**
      * A separate dialog for creating a new account, with fields that change
      * depending on which account type is selected.
      */
-    private static class RegisterDialog extends javax.swing.JDialog {
+    private static class RegisterScreen extends JPanel {
         private final JComboBox<AccountType> roleSelector;
         private final JTextField nameField;
         private final JTextField addressField;
@@ -207,13 +237,12 @@ public class LoginScreen extends JPanel {
         private final JTextField specializationField;
         private final JComboBox<MedicalManager> managerSelector;
 
-        private final CardLayout roleFieldsLayout = new CardLayout();
-        private final JPanel roleFieldsPanel = new JPanel(roleFieldsLayout);
+        RegisterScreen() {
+            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            this.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 
-        RegisterDialog(Component parent) {
-            super((java.awt.Frame) null, "Register New Account", true);
-            this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-
+            var mainPanel = new JPanel();
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
             roleSelector = new JComboBox<>(AccountType.values());
             nameField = new JTextField();
             addressField = new JTextField();
@@ -234,56 +263,96 @@ public class LoginScreen extends JPanel {
                 }
             });
 
-            var patientFields = new JPanel(new GridLayout(3, 2, 5, 5));
+            var patientFields = new JPanel();
+            patientFields.setLayout(new BoxLayout(patientFields, BoxLayout.Y_AXIS));
             patientFields.add(label("Age:"));
             patientFields.add(ageField);
+            patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Gender:"));
             patientFields.add(genderSelector);
+            patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Phone Number:"));
             patientFields.add(phoneField);
 
-            var doctorFields = new JPanel(new GridLayout(2, 2, 5, 5));
+            var doctorFields = new JPanel();
+            doctorFields.setLayout(new BoxLayout(doctorFields, BoxLayout.Y_AXIS));
             doctorFields.add(label("Specialization:"));
             doctorFields.add(specializationField);
+            doctorFields.add(Box.createVerticalStrut(10));
             doctorFields.add(label("Assigned Manager:"));
             doctorFields.add(managerSelector);
 
             var emptyFields = new JPanel();
 
-            roleFieldsPanel.add(patientFields, AccountType.PATIENT.name());
-            roleFieldsPanel.add(doctorFields, AccountType.DOCTOR.name());
-            roleFieldsPanel.add(emptyFields, AccountType.MEDICAL_MANAGER.name());
-            roleFieldsPanel.add(emptyFields, AccountType.ADMIN.name());
+            var rolePanel = new JPanel();
+            rolePanel.setLayout(new BoxLayout(rolePanel, BoxLayout.Y_AXIS));
 
-            roleSelector.addActionListener(e ->
-                roleFieldsLayout.show(roleFieldsPanel, ((AccountType) roleSelector.getSelectedItem()).name())
-            );
+            for (JComponent field : new JComponent[] {roleSelector, emailField, nameField, addressField, passwordField, ageField, genderSelector, phoneField, specializationField, managerSelector}) {
+                field.setMaximumSize(new Dimension(250, 30));
+                field.setAlignmentX(Component.CENTER_ALIGNMENT);
+            }
+
+            roleSelector.addActionListener(e -> {
+                rolePanel.removeAll();
+
+                switch (((AccountType) roleSelector.getSelectedItem())) {
+                case DOCTOR -> {
+                    rolePanel.add(doctorFields);
+                }
+                case PATIENT -> {
+                    rolePanel.add(patientFields);
+                }
+
+                default -> {
+                }
+                }
+
+                rolePanel.invalidate();
+                rolePanel.validate();
+                rolePanel.repaint();
+
+                this.invalidate();
+                this.validate();
+                this.repaint();
+            });
+
+            var submitPanel = new JPanel();
+            submitPanel.setLayout(new BoxLayout(submitPanel, BoxLayout.Y_AXIS));
 
             var submitButton = new JButton("Create Account");
             submitButton.addActionListener(e -> submit());
+            submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            this.add(label("Account Type:"));
-            this.add(roleSelector);
-            this.add(label("Display Name:"));
-            this.add(nameField);
-            this.add(label("Address:"));
-            this.add(addressField);
-            this.add(label("Email:"));
-            this.add(emailField);
-            this.add(label("Password:"));
-            this.add(passwordField);
-            this.add(roleFieldsPanel);
-            this.add(submitButton);
+            mainPanel.add(Box.createVerticalStrut(10));
+            mainPanel.add(label("Account Type:"));
+            mainPanel.add(roleSelector);
+            mainPanel.add(Box.createVerticalStrut(10));
+            mainPanel.add(label("Display Name:"));
+            mainPanel.add(nameField);
+            mainPanel.add(Box.createVerticalStrut(10));
+            mainPanel.add(label("Address:"));
+            mainPanel.add(addressField);
+            mainPanel.add(Box.createVerticalStrut(10));
+            mainPanel.add(label("Email:"));
+            mainPanel.add(emailField);
+            mainPanel.add(Box.createVerticalStrut(10));
+            mainPanel.add(label("Password:"));
+            mainPanel.add(passwordField);
+            mainPanel.add(Box.createVerticalStrut(10));
 
-            this.setSize(320, 480);
-            this.setLocationRelativeTo(parent);
+            submitPanel.add(Box.createVerticalStrut(10));
+            submitPanel.add(submitButton);
+
+            this.add(mainPanel);
+            this.add(rolePanel);
+            this.add(submitPanel);
         }
 
         private void submit() {
             var type = (AccountType) roleSelector.getSelectedItem();
 
             try {
-                Account account = AUTH_MANAGERS.get(type).create(
+                Account account = getAuthManager(type).create(
                     emailField.getText(),
                     nameField.getText(),
                     new String(passwordField.getPassword())
@@ -318,9 +387,6 @@ public class LoginScreen extends JPanel {
                         // Admin has no linked role object yet; only the login Account is created.
                     }
                 }
-
-                JOptionPane.showMessageDialog(this, "Account created! You can now log in.");
-                this.dispose();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid age.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException e) {
