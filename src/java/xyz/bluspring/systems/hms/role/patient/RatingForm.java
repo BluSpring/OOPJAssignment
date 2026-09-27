@@ -1,5 +1,6 @@
 package xyz.bluspring.systems.hms.role.patient;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Date;
@@ -20,37 +21,53 @@ import xyz.bluspring.systems.hms.ui.ListenableTextArea;
  */
 public class RatingForm extends JPanel {
     private final Patient patient;
-    private final JComboBox<Integer> scoreSelector;
-    private final ListenableTextArea commentArea;
+    private JComboBox<Integer> scoreSelector;
+    private ListenableTextArea commentArea;
 
     public RatingForm(Patient patient) {
         this.patient = patient;
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        var scoreLabel = new JLabel("Score (1-5):");
-        scoreSelector = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
-        scoreSelector.setMaximumSize(new Dimension(80, 30));
-        scoreSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (patient.getAssignedDoctor() != null) {
+            var horizontalPanel = new JPanel();
+            horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
+            var doctorLabel = new JLabel("Assigned Doctor: " + patient.getAssignedDoctor().toString());
+            horizontalPanel.add(doctorLabel);
 
-        var commentLabel = new JLabel("Comment:");
-        commentArea = new ListenableTextArea();
-        commentArea.setLineWrap(true);
-        commentArea.setRows(4);
-        ComponentHelper.makePaddedAndMarginedTextField(commentArea);
-        commentArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+            var scorePanel = new JPanel();
+            scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
 
-        JButton submitButton = new JButton("Submit Rating");
-        submitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        submitButton.addActionListener(e -> submit());
+            var scoreLabel = new JLabel("Score (1-5):");
+            scoreSelector = new JComboBox<>(new Integer[] {1, 2, 3, 4, 5});
+            scoreSelector.setMaximumSize(new Dimension(80, 30));
+            scoreSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        this.add(scoreLabel);
-        this.add(scoreSelector);
-        this.add(Box.createVerticalStrut(8));
-        this.add(commentLabel);
-        this.add(commentArea);
-        this.add(Box.createVerticalStrut(8));
-        this.add(submitButton);
+            var commentLabel = new JLabel("Comment:");
+            commentArea = new ListenableTextArea();
+            commentArea.setLineWrap(true);
+            commentArea.setRows(4);
+            ComponentHelper.makePaddedAndMarginedTextField(commentArea);
+            commentArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JButton submitButton = new JButton("Submit Rating");
+            submitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+            submitButton.addActionListener(e -> submit());
+
+            scorePanel.add(scoreLabel);
+            scorePanel.add(scoreSelector);
+            horizontalPanel.add(scorePanel);
+            this.add(scorePanel);
+            this.add(Box.createVerticalStrut(8));
+            this.add(commentLabel);
+            this.add(commentArea);
+            this.add(Box.createVerticalStrut(8));
+            this.add(submitButton);
+        } else {
+            var errorLabel = new JLabel("Error: You have not been assigned a doctor yet!");
+            errorLabel.setForeground(Color.RED);
+            this.add(errorLabel);
+        }
     }
 
     private void submit() {
