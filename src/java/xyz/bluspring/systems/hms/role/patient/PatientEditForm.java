@@ -3,23 +3,28 @@ package xyz.bluspring.systems.hms.role.patient;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.text.DateFormat;
-import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import xyz.bluspring.systems.hms.data.RoleManager;
+import xyz.bluspring.systems.hms.ui.PlaceholderFormattedTextField;
+
 public class PatientEditForm extends JPanel {
     private final Patient patient;
 
     private final JTextField nameField;
     private final JTextField addressField;
-    private final JTextField dobField;
+    private final JFormattedTextField dobField;
     private final JTextArea historyArea;
 
     public PatientEditForm(Patient patient) {
@@ -29,7 +34,8 @@ public class PatientEditForm extends JPanel {
 
         nameField = new JTextField();
         addressField = new JTextField();
-        dobField = new JTextField();
+        dobField = new PlaceholderFormattedTextField(new SimpleDateFormat("dd MMM yyyy"), "dd MMM yyyy");
+        dobField.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
         historyArea = new JTextArea(4, 20);
         historyArea.setLineWrap(true);
 
@@ -76,11 +82,12 @@ public class PatientEditForm extends JPanel {
     public void save() {
         patient.getProfile().setDisplayName(nameField.getText());
         patient.getProfile().setAddress(addressField.getText());
-        try {
-            patient.setDateOfBirth(DateFormat.getDateInstance().parse(dobField.getText()));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        if (dobField.getValue() == null) {
+            dobField.setValue(patient.getDateOfBirth());
         }
+
+        patient.setDateOfBirth((Date) dobField.getValue());
         patient.setMedicalHistory(historyArea.getText());
+        RoleManager.INSTANCE.save();
     }
 }
