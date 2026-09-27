@@ -1,8 +1,8 @@
 package xyz.bluspring.systems.hms.role.patient;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -69,8 +69,8 @@ public class Patient extends PersonalizableUser<Patient> {
     }
 
     public int getAge() {
-        Duration duration = Duration.between(dateOfBirth.toInstant(), Instant.now());
-        return (int) duration.get(ChronoUnit.YEARS);
+        Period period = Period.between(LocalDate.ofInstant(dateOfBirth.toInstant(), ZoneId.systemDefault()), LocalDate.now());
+        return period.getYears();
     }
 
     public String getGender() {
@@ -145,6 +145,11 @@ public class Patient extends PersonalizableUser<Patient> {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return this.getProfile().getDisplayName() + " - " + this.getAge() + " years old";
     }
 
     public void displayPatientInfo() {

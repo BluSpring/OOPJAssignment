@@ -11,13 +11,13 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -29,7 +29,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import xyz.bluspring.systems.hms.LoginScreen;
 import xyz.bluspring.systems.hms.Main;
 import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
@@ -126,7 +125,7 @@ public class ManagerDashboard extends JPanel {
         leftPanel.add(headerInfoLabel);
 
         JButton logoutButton = new JButton("Log Out");
-        logoutButton.addActionListener(e -> logout());
+        logoutButton.addActionListener(e -> Main.logout(this));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 8));
         rightPanel.setOpaque(false);
@@ -135,23 +134,6 @@ public class ManagerDashboard extends JPanel {
         header.add(leftPanel, BorderLayout.CENTER);
         header.add(rightPanel, BorderLayout.EAST);
         return header;
-    }
-
-    private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Are you sure you want to log out?",
-            "Confirm Logout",
-            JOptionPane.YES_NO_OPTION
-        );
-        if (confirm == JOptionPane.YES_OPTION) {
-            JFrame frame = Main.getFrame();
-            frame.getContentPane().removeAll();
-            frame.getContentPane().setLayout(new BorderLayout());
-            frame.getContentPane().add(new LoginScreen(), BorderLayout.CENTER);
-            Main.resetSizesToSmallWindow();
-            Main.refresh();
-        }
     }
 
     private String getManagerDisplayName() {

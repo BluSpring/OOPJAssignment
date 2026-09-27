@@ -1,7 +1,13 @@
 package xyz.bluspring.systems.hms.role.patient;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import xyz.bluspring.systems.hms.Main;
 
 public class PatientDashboard extends JPanel {
     public PatientDashboard(Patient patient) {
@@ -12,6 +18,9 @@ public class PatientDashboard extends JPanel {
         var dob = new JLabel("Date of Birth: " + patient.getDateOfBirth());
         var history = new JLabel("Medical History: " + patient.getMedicalHistory());
 
+        JButton logoutButton = new JButton("Log Out");
+        logoutButton.addActionListener(e -> Main.logout(this));
+
         String doctorName = (patient.getAssignedDoctor() != null)
             ? patient.getAssignedDoctor().getProfile().getDisplayName()
             : "Not assigned";
@@ -21,5 +30,7 @@ public class PatientDashboard extends JPanel {
             label.setForeground(Color.BLACK);
             this.add(label);
         }
+
+        this.add(logoutButton);
     }
 }

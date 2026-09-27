@@ -1,5 +1,6 @@
 package xyz.bluspring.systems.hms;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -7,7 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -86,5 +89,22 @@ public class Main {
 
         resetSizesToSmallWindow();
         window.setVisible(true);
+    }
+
+    public static void logout(JComponent parent) {
+        int confirm = JOptionPane.showConfirmDialog(
+            parent,
+            "Are you sure you want to log out?",
+            "Confirm Logout",
+            JOptionPane.YES_NO_OPTION
+        );
+        if (confirm == JOptionPane.YES_OPTION) {
+            JFrame frame = Main.getFrame();
+            frame.getContentPane().removeAll();
+            frame.getContentPane().setLayout(new BorderLayout());
+            frame.getContentPane().add(new LoginScreen(), BorderLayout.CENTER);
+            Main.resetSizesToSmallWindow();
+            Main.refresh();
+        }
     }
 }

@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -74,10 +75,20 @@ public class ComponentHelper {
      * @param field The text field to disallow whitespace into.
      */
     public static void disallowWhitespace(JTextComponent field) {
+        configureFieldFilters(field, c -> !Character.isWhitespace(c));
+    }
+
+    /**
+     * Allows adding filters for a field.
+     *
+     * @param field             The text field to configure.
+     * @param allowedCharacters The predicate for determining what characters to allow.
+     */
+    public static void configureFieldFilters(JTextComponent field, Predicate<Character> allowedCharacters) {
         field.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (Character.isWhitespace(e.getKeyChar())) {
+                if (!allowedCharacters.test(e.getKeyChar())) {
                     e.consume();
                 }
             }

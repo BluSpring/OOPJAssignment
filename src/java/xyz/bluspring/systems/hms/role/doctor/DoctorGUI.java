@@ -1,14 +1,30 @@
 package xyz.bluspring.systems.hms.role.doctor;
 
-import xyz.bluspring.systems.hms.role.patient.Patient;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
-public class DoctorGUI extends JFrame {
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import xyz.bluspring.systems.hms.Main;
+import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.Utils;
+
+public class DoctorGUI extends JPanel {
 
     private final Doctor doctor;
     private final Patient patient;
@@ -21,7 +37,6 @@ public class DoctorGUI extends JFrame {
     private JTextField bloodPressureField;
     private JTextField oxygenLevelField;
 
-    private JTextField consultationDateField;
     private JTextArea consultationNotesArea;
 
     private JTextField medicationField;
@@ -36,25 +51,18 @@ public class DoctorGUI extends JFrame {
         this.doctor = doctor;
         this.patient = patient;
 
-        setTitle("Doctor Dashboard");
-        setSize(800, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
         createGUI();
     }
 
     private void createGUI() {
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel mainPanel = new JPanel();
-
-        mainPanel.setLayout(
-            new BoxLayout(mainPanel, BoxLayout.Y_AXIS)
-        );
-
-        mainPanel.setBorder(
+        this.setBorder(
             new EmptyBorder(15, 15, 15, 15)
         );
+
+        var headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
 
         JLabel titleLabel = new JLabel(
             "Doctor Dashboard - "
@@ -69,58 +77,66 @@ public class DoctorGUI extends JFrame {
             Component.LEFT_ALIGNMENT
         );
 
-        mainPanel.add(titleLabel);
-        mainPanel.add(Box.createVerticalStrut(15));
+        headerPanel.add(titleLabel);
+        JButton logoutButton = new JButton("Log Out");
+        logoutButton.addActionListener(e -> Main.logout(this));
 
-        mainPanel.add(createPatientPanel());
-        mainPanel.add(Box.createVerticalStrut(10));
+        headerPanel.add(Box.createHorizontalStrut(15));
+        headerPanel.add(logoutButton);
 
-        mainPanel.add(createProfilePanel());
-        mainPanel.add(Box.createVerticalStrut(10));
+        this.add(headerPanel);
+        this.add(Box.createVerticalStrut(15));
 
-        mainPanel.add(createVitalSignsPanel());
-        mainPanel.add(Box.createVerticalStrut(10));
+        var sidewayPanel = new JPanel();
+        sidewayPanel.setLayout(new BoxLayout(sidewayPanel, BoxLayout.X_AXIS));
 
-        mainPanel.add(createConsultationPanel());
-        mainPanel.add(Box.createVerticalStrut(10));
+        var leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        mainPanel.add(createPrescriptionPanel());
-        mainPanel.add(Box.createVerticalStrut(10));
+        var rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
-        mainPanel.add(createMedicalTestPanel());
+        leftPanel.add(createPatientPanel());
+        leftPanel.add(Box.createVerticalStrut(10));
 
-        JScrollPane scrollPane =
-            new JScrollPane(mainPanel);
+        rightPanel.add(createProfilePanel());
+        rightPanel.add(Box.createVerticalStrut(10));
 
-        scrollPane.setVerticalScrollBarPolicy(
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-        );
+        rightPanel.add(createVitalSignsPanel());
+        rightPanel.add(Box.createVerticalStrut(10));
 
-        add(scrollPane);
+        rightPanel.add(createConsultationPanel());
+        rightPanel.add(Box.createVerticalStrut(10));
+
+        rightPanel.add(createPrescriptionPanel());
+        rightPanel.add(Box.createVerticalStrut(10));
+
+        rightPanel.add(createMedicalTestPanel());
+
+        var scrollableRight = new JScrollPane(rightPanel);
+        scrollableRight.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        this.add(leftPanel);
+        this.add(scrollableRight);
     }
 
-    private JPanel createPatientPanel() {
+    private JScrollPane createPatientPanel() {
 
-        JPanel panel =
-            createSectionPanel("Patient Information");
+        JPanel panel = createSectionPanel("Patient Information");
 
-        JTextArea patientInformation =
-            new JTextArea(
-                doctor.getPatientInformation(patient)
-            );
+        panel.add(new JLabel("Name: " + patient.getProfile().getDisplayName()));
+        panel.add(new JLabel("Age: " + patient.getAge()));
+        panel.add(new JLabel("Gender: " + patient.getGender()));
 
-        patientInformation.setEditable(false);
-        patientInformation.setRows(4);
-        patientInformation.setLineWrap(true);
-        patientInformation.setWrapStyleWord(true);
+        panel.add(Utils.make(new JTextArea("Medical History: " + patient.getMedicalHistory()), area -> {
+            area.setEditable(false);
+        }));
 
-        panel.add(
-            new JLabel("Patient Details:")
-        );
-
-        panel.add(patientInformation);
-
-        return panel;
+        var pane = new JScrollPane(panel);
+        pane.setPreferredSize(new Dimension(795, 100));
+        pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        return pane;
     }
 
     private JPanel createProfilePanel() {
@@ -309,13 +325,6 @@ public class DoctorGUI extends JFrame {
         JPanel panel =
             createSectionPanel("Consultation Note");
 
-        consultationDateField =
-            new JTextField();
-
-        consultationDateField.setToolTipText(
-            "DD/MM/YYYY"
-        );
-
         consultationNotesArea =
             new JTextArea(4, 20);
 
@@ -324,12 +333,6 @@ public class DoctorGUI extends JFrame {
 
         JButton saveButton =
             new JButton("Save Consultation Note");
-
-        panel.add(
-            new JLabel("Date (DD/MM/YYYY):")
-        );
-
-        panel.add(consultationDateField);
 
         panel.add(
             new JLabel("Notes:")
@@ -352,22 +355,15 @@ public class DoctorGUI extends JFrame {
     }
 
     private void saveConsultationNote() {
-
-        String dateText =
-            consultationDateField
-                .getText()
-                .trim();
-
         String notes =
             consultationNotesArea
                 .getText()
                 .trim();
 
-        if (dateText.isEmpty()
-            || notes.isEmpty()) {
+        if (notes.isEmpty()) {
 
             showError(
-                "Please enter the date and consultation notes."
+                "Please enter the consultation notes."
             );
 
             return;
@@ -382,8 +378,7 @@ public class DoctorGUI extends JFrame {
 
             format.setLenient(false);
 
-            Date date =
-                format.parse(dateText);
+            Date date = Date.from(Instant.now());
 
             doctor.addConsultationNote(
                 patient,
@@ -396,7 +391,6 @@ public class DoctorGUI extends JFrame {
                 "Consultation note saved successfully!"
             );
 
-            consultationDateField.setText("");
             consultationNotesArea.setText("");
 
         } catch (Exception e) {

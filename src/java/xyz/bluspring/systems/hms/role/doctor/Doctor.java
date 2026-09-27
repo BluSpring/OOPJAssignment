@@ -68,6 +68,7 @@ public class Doctor extends PersonalizableUser<Doctor> {
 
     public String getPatientInformation(Patient patient) {
         return "Patient ID: " + patient.getPatientId()
+            + "\nName: " + patient.getProfile().getDisplayName()
             + "\nAge: " + patient.getAge()
             + "\nGender: " + patient.getGender()
             + "\nPhone Number: " + patient.getPhoneNumber();

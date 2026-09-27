@@ -174,7 +174,8 @@ public class LoginScreen extends JPanel {
                     return;
                 }
 
-                new DoctorGUI(doctor, chosenPatient).setVisible(true);
+                var gui = new DoctorGUI(doctor, chosenPatient);
+                showOnWindow(gui);
             }
             case MEDICAL_MANAGER -> {
                 MedicalManager manager = RoleManager.INSTANCE.findManagerById(id);
@@ -283,12 +284,14 @@ public class LoginScreen extends JPanel {
             var patientFields = new JPanel();
             patientFields.setLayout(new BoxLayout(patientFields, BoxLayout.Y_AXIS));
             patientFields.add(label("Date of Birth:"));
+            ComponentHelper.configureFieldFilters(dateOfBirthField, Character::isDigit);
             patientFields.add(dateOfBirthField);
             patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Gender:"));
             patientFields.add(genderSelector);
             patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Phone Number:"));
+            ComponentHelper.configureFieldFilters(phoneField, c -> Character.isDigit(c) || c == '+');
             patientFields.add(phoneField);
 
             var doctorFields = new JPanel();
