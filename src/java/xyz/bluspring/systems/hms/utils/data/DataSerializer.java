@@ -16,6 +16,7 @@ public abstract class DataSerializer<T> {
     public static final DataSerializer<Long> LONG = DataSerializer.of(Objects::toString, Long::parseLong);
     public static final DataSerializer<Float> FLOAT = DataSerializer.of(Object::toString, Float::parseFloat);
     public static final DataSerializer<Double> DOUBLE = DataSerializer.of(Object::toString, Double::parseDouble);
+    public static final DataSerializer<Boolean> BOOL = DataSerializer.of(Object::toString, Boolean::parseBoolean);
 
     public static final DataSerializer<UUID> UUID_SERIALIZER = STRING.map(UUID::fromString, UUID::toString);
     public static final DataSerializer<Date> DATE = LONG.map(Date::new, Date::getTime);

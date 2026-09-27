@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import xyz.bluspring.systems.hms.data.AdminDataStorage;
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
@@ -75,6 +76,7 @@ public class Main {
         RoleManager.INSTANCE.load();
         ManagerDataStorage.INSTANCE.load();
         DoctorDataStorage.INSTANCE.load();
+        AdminDataStorage.INSTANCE.load();
 
         if (IS_TESTING) { // Add testing data
             System.out.println("Testing data enabled!");

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.bluspring.systems.hms.role.admin.Admin;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.role.manager.MedicalManager;
 import xyz.bluspring.systems.hms.role.patient.Patient;
@@ -24,25 +23,21 @@ public class RoleManager {
     private final List<Doctor> doctors = new ArrayList<>();
     private final List<MedicalManager> managers = new ArrayList<>();
     private final List<Patient> patients = new ArrayList<>();
-    private final List<Admin> admins = new ArrayList<>();
 
     public void load() {
         doctors.clear();
         managers.clear();
         patients.clear();
-        admins.clear();
 
         DataSerializers.deserializeLines(Doctor.SERIALIZER, DOCTORS_FILE, doctors);
         DataSerializers.deserializeLines(MedicalManager.SERIALIZER, MANAGERS_FILE, managers);
         DataSerializers.deserializeLines(Patient.SERIALIZER, PATIENTS_FILE, patients);
-//        DataSerializers.deserializeLines(Admin.SERIALIZER, ADMINS_FILE, admins);
     }
 
     public void save() {
         DataSerializers.serializeValues(DOCTORS_FILE, doctors);
         DataSerializers.serializeValues(MANAGERS_FILE, managers);
         DataSerializers.serializeValues(PATIENTS_FILE, patients);
-//        DataSerializers.serializeValues(ADMINS_FILE, admins);
     }
 
     public List<Doctor> getDoctors() {
@@ -55,10 +50,6 @@ public class RoleManager {
 
     public List<Patient> getPatients() {
         return patients;
-    }
-
-    public List<Admin> getAdmins() {
-        return admins;
     }
 
     public MedicalManager findManagerById(String id) {
