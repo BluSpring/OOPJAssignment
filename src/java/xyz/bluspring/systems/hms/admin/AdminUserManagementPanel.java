@@ -87,7 +87,7 @@ public class AdminUserManagementPanel extends JPanel {
                         button.addActionListener(e -> {
                             showAccountDetailsScreen(authManager, acc, account, () -> {
                                 Main.reset();
-                                window.getContentPane().add(new AdminUserManagementPanel(account));
+                                AdminUI.openAdminUI(account);
                                 Main.refresh();
                             });
                         });
@@ -104,7 +104,7 @@ public class AdminUserManagementPanel extends JPanel {
                         button.addActionListener(e -> {
                             authManager.deleteAccount(acc);
                             Main.reset();
-                            window.getContentPane().add(new AdminUserManagementPanel(account));
+                            AdminUI.openAdminUI(account);
                             Main.refresh();
                         });
                     }));
@@ -252,7 +252,7 @@ public class AdminUserManagementPanel extends JPanel {
         frame.getContentPane().add(mainPanel);
 
         frame.setPreferredSize(new Dimension(1280, 768));
-        frame.setLocationRelativeTo(Main.getFrame());
+        frame.setLocationRelativeTo(null);
         frame.pack();
         frame.setVisible(true);
     }
