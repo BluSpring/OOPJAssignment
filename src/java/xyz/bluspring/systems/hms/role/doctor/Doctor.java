@@ -23,7 +23,8 @@ public class Doctor extends PersonalizableUser<Doctor> {
         Doctor::new
     );
 
-    public static final DataSerializer<Doctor> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findDoctorById, Doctor::getDoctorId);
+    public static final DataSerializer<Doctor> REFERENCE_SERIALIZER = DataSerializer.STRING
+        .map(RoleManager.INSTANCE::findDoctorById, doctor -> doctor != null ? doctor.getDoctorId() : null);
 
     private String specialization;
     private MedicalManager assignedManager;

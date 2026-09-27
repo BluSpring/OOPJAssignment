@@ -1,11 +1,20 @@
 package xyz.bluspring.systems.hms;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class Main {
     public static final boolean IS_TESTING = false;
@@ -42,7 +51,7 @@ public class Main {
 
         // Sets default colours for each component
         // Key reference: https://alvinalexander.com/java/java-uimanager-color-keys-list/
-        UIManager.getDefaults().put("Label.foreground", Color.WHITE);
+        UIManager.getDefaults().put("Label.foreground", Color.BLACK);
 
         window.setContentPane(new JPanel() {
             @Override

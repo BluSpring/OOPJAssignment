@@ -1,5 +1,8 @@
 package xyz.bluspring.systems.hms.role.patient;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +18,6 @@ import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 public class Patient extends PersonalizableUser<Patient> {
     public static final DataSerializer<Patient> SERIALIZER = RecordDataSerializer.of(
         Profile.SERIALIZER, Patient::getProfile,
-        DataSerializer.INT, Patient::getAge,
         DataSerializer.STRING, Patient::getGender,
         DataSerializer.STRING, Patient::getPhoneNumber,
 
@@ -27,32 +29,30 @@ public class Patient extends PersonalizableUser<Patient> {
         Patient::new
     );
 
-    public static final DataSerializer<Patient> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findPatientById, Patient::getPatientId);
+    public static final DataSerializer<Patient> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findPatientById, patient -> patient != null ? patient.getPatientId() : null);
 
     // Fields used by the Doctor role
-    private int age;
     private String gender;
     private String phoneNumber;
 
     // Fields used by the Patient role
     private Date dateOfBirth;
-    private String medicalHistory;
+    private String medicalHistory = "";
     private Doctor assignedDoctor;
     private final List<MedicalRecord> medicalRecords = new ArrayList<>();
     private final List<Rating> ratings = new ArrayList<>();
 
-    private Patient(Profile profile, int age, String gender, String phoneNumber, Date dateOfBirth, String medicalHistory, Doctor assignedDoctor, List<MedicalRecord> records, List<Rating> ratings) {
-        this(profile, age, gender, phoneNumber);
-        this.dateOfBirth = dateOfBirth;
+    private Patient(Profile profile, String gender, String phoneNumber, Date dateOfBirth, String medicalHistory, Doctor assignedDoctor, List<MedicalRecord> records, List<Rating> ratings) {
+        this(profile, dateOfBirth, gender, phoneNumber);
         this.medicalHistory = medicalHistory;
         this.assignedDoctor = assignedDoctor;
         this.medicalRecords.addAll(records);
         this.ratings.addAll(ratings);
     }
 
-    public Patient(Profile profile, int age, String gender, String phoneNumber) {
+    public Patient(Profile profile, Date dateOfBirth, String gender, String phoneNumber) {
         super(profile);
-        this.age = age;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
     }
@@ -69,11 +69,8 @@ public class Patient extends PersonalizableUser<Patient> {
     }
 
     public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+        Duration duration = Duration.between(dateOfBirth.toInstant(), Instant.now());
+        return (int) duration.get(ChronoUnit.YEARS);
     }
 
     public String getGender() {
@@ -141,18 +138,18 @@ public class Patient extends PersonalizableUser<Patient> {
     // --- Shared behaviour ---
 
     public void updateProfile(String displayName, String address,
-                              int age, String gender, String phoneNumber) {
+                              Date dateOfBirth, String gender, String phoneNumber) {
         getProfile().setDisplayName(displayName);
         getProfile().setAddress(address);
 
-        this.age = age;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
     }
 
     public void displayPatientInfo() {
         System.out.println("Patient ID: " + this.getPatientId());
-        System.out.println("Age: " + age);
+        System.out.println("Age: " + this.getAge());
         System.out.println("Gender: " + gender);
         System.out.println("Phone Number: " + phoneNumber);
     }
@@ -162,7 +159,7 @@ public class Patient extends PersonalizableUser<Patient> {
         System.out.println("Patient ID: " + this.getPatientId());
         System.out.println("Name: " + getProfile().getDisplayName());
         System.out.println("Address: " + getProfile().getAddress());
-        System.out.println("Age: " + age);
+        System.out.println("Age: " + this.getAge());
         System.out.println("Gender: " + gender);
         System.out.println("Phone Number: " + phoneNumber);
     }

@@ -18,7 +18,7 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
     );
 
     // added null check to prevent NullPointerException when serializing if manager reference is missing
-    public static final DataSerializer<MedicalManager> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findManagerById, mgr -> mgr != null ? mgr.getManagerId() : "");
+    public static final DataSerializer<MedicalManager> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findManagerById, mgr -> mgr != null ? mgr.getManagerId() : null);
 
     public MedicalManager(Profile profile) {
         super(profile);

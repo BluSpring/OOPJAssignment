@@ -5,8 +5,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,6 +41,7 @@ import xyz.bluspring.systems.hms.role.patient.PatientEditForm;
 import xyz.bluspring.systems.hms.role.patient.PatientRecordsPanel;
 import xyz.bluspring.systems.hms.role.patient.RatingForm;
 import xyz.bluspring.systems.hms.ui.ComponentHelper;
+import xyz.bluspring.systems.hms.ui.PlaceholderFormattedTextField;
 import xyz.bluspring.systems.hms.utils.Utils;
 
 /**
@@ -238,7 +242,7 @@ public class LoginScreen extends JPanel {
         private final JPasswordField passwordField;
 
         // Patient-specific fields
-        private final JTextField ageField;
+        private final JFormattedTextField dateOfBirthField;
         private final JComboBox<String> genderSelector;
         private final JTextField phoneField;
 
@@ -261,7 +265,8 @@ public class LoginScreen extends JPanel {
             emailField = new JTextField();
             passwordField = new JPasswordField();
 
-            ageField = new JTextField();
+            dateOfBirthField = new PlaceholderFormattedTextField(new SimpleDateFormat("dd-MM-yyyy"), "dd-MM-yyyy");
+            dateOfBirthField.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
             genderSelector = new JComboBox<>(new String[]{"Male", "Female", "Other"});
             phoneField = new JTextField();
 
@@ -277,8 +282,8 @@ public class LoginScreen extends JPanel {
 
             var patientFields = new JPanel();
             patientFields.setLayout(new BoxLayout(patientFields, BoxLayout.Y_AXIS));
-            patientFields.add(label("Age:"));
-            patientFields.add(ageField);
+            patientFields.add(label("Date of Birth:"));
+            patientFields.add(dateOfBirthField);
             patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Gender:"));
             patientFields.add(genderSelector);
@@ -298,8 +303,9 @@ public class LoginScreen extends JPanel {
 
             var rolePanel = new JPanel();
             rolePanel.setLayout(new BoxLayout(rolePanel, BoxLayout.Y_AXIS));
+            rolePanel.add(patientFields); // we're starting on patient, might as well use patient!
 
-            for (JComponent field : new JComponent[] {roleSelector, emailField, nameField, addressField, passwordField, ageField, genderSelector, phoneField, specializationField, managerSelector}) {
+            for (JComponent field : new JComponent[] {roleSelector, emailField, nameField, addressField, passwordField, dateOfBirthField, genderSelector, phoneField, specializationField, managerSelector}) {
                 field.setMaximumSize(new Dimension(250, 30));
                 field.setAlignmentX(Component.CENTER_ALIGNMENT);
             }
@@ -382,9 +388,11 @@ public class LoginScreen extends JPanel {
 
         private void submit() {
             var type = (AccountType) roleSelector.getSelectedItem();
+            AuthManager authManager = getAuthManager(type);
+            Account account = null;
 
             try {
-                Account account = getAuthManager(type).create(
+                account = authManager.create(
                     emailField.getText(),
                     nameField.getText(),
                     new String(passwordField.getPassword())
@@ -394,11 +402,18 @@ public class LoginScreen extends JPanel {
 
                 switch (type) {
                     case PATIENT -> {
-                        int age = Integer.parseInt(ageField.getText());
+                        if (dateOfBirthField.getValue() == null) {
+                            authManager.deleteAccount(account);
+
+                            JOptionPane.showMessageDialog(this, "Please enter a valid date of birth.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        Date dateOfBirth = (Date) dateOfBirthField.getValue();
                         String gender = (String) genderSelector.getSelectedItem();
                         String phone = phoneField.getText();
 
-                        Patient patient = new Patient(profile, age, gender, phone);
+                        Patient patient = new Patient(profile, dateOfBirth, gender, phone);
                         RoleManager.INSTANCE.getPatients().add(patient);
                         RoleManager.INSTANCE.save();
                     }
@@ -421,9 +436,11 @@ public class LoginScreen extends JPanel {
                 }
 
                 routeToDashboard(this, type, account);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid age.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
+                if (account != null) {
+                    authManager.deleteAccount(account);
+                }
+
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
             }
         }

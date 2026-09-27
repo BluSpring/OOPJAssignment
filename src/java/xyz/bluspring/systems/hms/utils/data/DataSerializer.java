@@ -39,7 +39,13 @@ public abstract class DataSerializer<T> {
     }
 
     public DataSerializer<T> orElse(Supplier<T> defaultValue) {
-        return DataSerializer.of(this::serialize, data -> {
+        return DataSerializer.of(value -> {
+            if (value != null) {
+                return this.serialize(value);
+            } else {
+                return this.serialize(defaultValue.get());
+            }
+        }, data -> {
             try {
                 T value = this.deserialize(data);
                 if (value == null) {
@@ -73,8 +79,9 @@ public abstract class DataSerializer<T> {
     }
 
     public DataSerializer<List<T>> list() {
-        return DataSerializer.of(list -> DataSerializers.writeSegmentedLine(list.stream().map(this::serialize).toList()),
-            data -> new ArrayList<>(DataSerializers.readSegmentedLine(data).stream().map(this::deserialize).toList()));
+        return DataSerializer.<List<T>>of(list -> DataSerializers.writeSegmentedLine(list.stream().map(this::serialize).toList()),
+                data -> new ArrayList<>(DataSerializers.readSegmentedLine(data).stream().map(this::deserialize).toList()))
+            .orElse(ArrayList::new);
     }
 
     public DataSerializer<List<T>> list(int min, int max) {
@@ -97,7 +104,16 @@ public abstract class DataSerializer<T> {
         return new DataSerializer<>() {
             @Override
             public String serialize(T value) {
-                return encoder.apply(value);
+                try {
+                    if (value == null) {
+                        return "";
+                    }
+
+                    return encoder.apply(value);
+                } catch (Exception e) {
+                    System.err.println("Failed to serialize \"" + value + "\"!");
+                    throw new RuntimeException(e);
+                }
             }
 
             @Override
