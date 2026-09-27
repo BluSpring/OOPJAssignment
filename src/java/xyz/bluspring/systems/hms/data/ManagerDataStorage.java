@@ -29,9 +29,14 @@ public class ManagerDataStorage {
 
         DataSerializers.deserializeLines(Department.SERIALIZER, DEPARTMENT_FILE, departments);
         DataSerializers.deserializeLines(DoctorShift.SERIALIZER, ROSTER_FILE, doctorShifts);
+
+        // filter out invalid shifts without a doctor so serializer won't throw NullPointerException
+        doctorShifts.removeIf(shift -> shift.getDoctor() == null);
     }
 
     public void save() {
+        // ensure no invalid shifts with null doctors get saved
+        doctorShifts.removeIf(shift -> shift.getDoctor() == null);
         DataSerializers.serializeValues(Department.SERIALIZER, DEPARTMENT_FILE, departments);
         DataSerializers.serializeValues(DoctorShift.SERIALIZER, ROSTER_FILE, doctorShifts);
     }
