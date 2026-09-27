@@ -4,6 +4,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
+import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
@@ -16,6 +17,8 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
         MedicalManager::new
     );
 
+    public static final DataSerializer<MedicalManager> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findManagerById, MedicalManager::getManagerId);
+
     public MedicalManager(Profile profile) {
         super(profile);
     }
@@ -23,6 +26,10 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
     @Override
     public DataSerializer<MedicalManager> getSerializer() {
         return SERIALIZER;
+    }
+
+    public String getManagerId() {
+        return this.getProfile().getId().toString();
     }
 
     // Updates manager profile details
@@ -99,6 +106,15 @@ public class MedicalManager extends PersonalizableUser<MedicalManager> {
 
     public ManagerDataStorage getStorage() {
         return ManagerDataStorage.INSTANCE;
+    }
+
+    public List<Doctor> getAssignedDoctors() {
+        return RoleManager.INSTANCE.getDoctors().stream().filter(e -> e.getAssignedManager() == this).toList();
+    }
+
+    public void assignDoctor(Doctor doctor) {
+        doctor.setAssignedManager(this);
+        RoleManager.INSTANCE.save();
     }
 
     // Calculates estimated revenue based on total consultations and consultation rate

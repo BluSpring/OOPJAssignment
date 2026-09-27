@@ -1,8 +1,9 @@
-package xyz.bluspring.systems.hms.role.patient;
+package xyz.bluspring.systems.hms.data.records;
 
 import java.util.Date;
 
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
+import xyz.bluspring.systems.hms.role.patient.Patient;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 

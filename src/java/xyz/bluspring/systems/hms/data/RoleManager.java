@@ -61,6 +61,16 @@ public class RoleManager {
         return admins;
     }
 
+    public MedicalManager findManagerById(String id) {
+        for (MedicalManager manager : managers) {
+            if (manager.getManagerId().equals(id)) {
+                return manager;
+            }
+        }
+
+        return null;
+    }
+
     public Doctor findDoctorById(String id) {
         for (Doctor doctor : doctors) {
             if (doctor.getDoctorId().equals(id)) {

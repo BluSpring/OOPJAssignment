@@ -1,7 +1,15 @@
 package xyz.bluspring.systems.hms.role.patient;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import xyz.bluspring.systems.hms.data.records.MedicalRecord;
 
 public class PatientRecordsPanel extends JPanel {
     private final Patient patient;

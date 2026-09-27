@@ -6,11 +6,12 @@ import java.util.List;
 
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
+import xyz.bluspring.systems.hms.data.records.MedicalRecord;
+import xyz.bluspring.systems.hms.data.records.Prescription;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
-import xyz.bluspring.systems.hms.role.patient.MedicalRecord;
+import xyz.bluspring.systems.hms.role.manager.MedicalManager;
 import xyz.bluspring.systems.hms.role.patient.Patient;
-import xyz.bluspring.systems.hms.role.patient.Prescription;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
@@ -18,22 +19,33 @@ public class Doctor extends PersonalizableUser<Doctor> {
     public static final DataSerializer<Doctor> SERIALIZER = RecordDataSerializer.of(
         Profile.SERIALIZER, Doctor::getProfile,
         DataSerializer.STRING, Doctor::getSpecialization,
+        MedicalManager.REFERENCE_SERIALIZER, Doctor::getAssignedManager,
         Doctor::new
     );
 
     public static final DataSerializer<Doctor> REFERENCE_SERIALIZER = DataSerializer.STRING.map(RoleManager.INSTANCE::findDoctorById, Doctor::getDoctorId);
 
     private String specialization;
+    private MedicalManager assignedManager;
 
-    public Doctor(Profile profile, String specialization) {
+    public Doctor(Profile profile, String specialization, MedicalManager assignedManager) {
         super(profile);
 
         this.specialization = specialization;
+        this.assignedManager = assignedManager;
     }
 
     @Override
     public DataSerializer<Doctor> getSerializer() {
         return SERIALIZER;
+    }
+
+    public MedicalManager getAssignedManager() {
+        return assignedManager;
+    }
+
+    public void setAssignedManager(MedicalManager manager) {
+        this.assignedManager = manager;
     }
 
     public String getDoctorId() {
