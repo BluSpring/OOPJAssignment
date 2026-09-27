@@ -1,6 +1,7 @@
 package xyz.bluspring.systems.hms.utils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 
 public class ByteArrayUtils {
     private ByteArrayUtils() {
@@ -29,5 +30,9 @@ public class ByteArrayUtils {
 
         // Convert the byte array to a string
         return new String(hexChars, StandardCharsets.UTF_8);
+    }
+
+    public static byte[] hexToBytes(String hex) {
+        return HexFormat.of().parseHex(hex);
     }
 }

@@ -1,9 +1,9 @@
 package xyz.bluspring.systems.hms.auth;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 import xyz.bluspring.systems.hms.utils.ByteArrayUtils;
 import xyz.bluspring.systems.hms.utils.data.DataSerializers;
@@ -120,7 +123,8 @@ public class AuthManager implements Iterable<Account> {
             }
         } while (true);
 
-        var account = new Account(this.getType(), uuid, email, displayName, hashPassword(password));
+        String[] newPasswordWithSalt = hashPassword(password, createSalt());
+        var account = new Account(this.getType(), uuid, email, displayName, newPasswordWithSalt[0] + "." + newPasswordWithSalt[1]);
         this.accounts.add(account);
         this.addAuthLog(account, AuthLog.Type.REGISTER);
         this.save();
@@ -140,7 +144,11 @@ public class AuthManager implements Iterable<Account> {
             throw new IllegalArgumentException("Invalid email or password!");
         }
 
-        if (!account.getPasswordHash().equals(this.hashPassword(password))) {
+        String[] splitPassword = account.getPasswordHashWithSalt().split("\\.");
+        String currentHash = splitPassword[0];
+        byte[] salt = ByteArrayUtils.hexToBytes(splitPassword[1]);
+
+        if (!currentHash.equals(this.hashPassword(password, salt)[0])) {
             throw new IllegalArgumentException("Invalid email or password!");
         }
 
@@ -150,18 +158,32 @@ public class AuthManager implements Iterable<Account> {
         return account;
     }
 
+    private byte[] createSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] newSalt = new byte[16];
+        random.nextBytes(newSalt);
+        return newSalt;
+    }
+
     public void changePassword(Account account, String oldPassword, String newPassword) {
         checkStrongPassword(newPassword);
+        byte[] newSalt = createSalt();
 
-        if (!account.getPasswordHash().equals(this.hashPassword(oldPassword))) {
+        String[] splitPassword = account.getPasswordHashWithSalt().split("\\.");
+        String originalHash = splitPassword[0];
+        byte[] salt = ByteArrayUtils.hexToBytes(splitPassword[1]);
+
+        String[] newHashWithSalt = this.hashPassword(oldPassword, newSalt);
+
+        if (!originalHash.equals(newHashWithSalt[0])) {
             throw new IllegalArgumentException("Invalid email or password!");
         }
 
-        if (account.getPasswordHash().equals(this.hashPassword(newPassword))) {
+        if (originalHash.equals(this.hashPassword(newPassword, salt)[0])) {
             throw new IllegalArgumentException("New password is the same as the old password!");
         }
 
-        account.setPasswordHash(this.hashPassword(newPassword));
+        account.setPasswordHashWithSalt(newHashWithSalt[0] + "." + newHashWithSalt[1]);
         this.addAuthLog(account, AuthLog.Type.CHANGE_PASSWORD);
         this.save();
     }
@@ -174,16 +196,17 @@ public class AuthManager implements Iterable<Account> {
         this.authLogs.add(new AuthLog(account.getUUID(), type, System.currentTimeMillis(), extraData));
     }
 
-    private String hashPassword(String password) {
+    private String[] hashPassword(String password, byte[] salt) {
         try {
-            // Get a SHA-256 message digest algorithm for hashing
-            var digest = MessageDigest.getInstance("SHA-256");
-            // Run the string through the algorithm to hash it with SHA-256
-            var hashBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 4096, 256);
 
-            // Convert the hashed string into a hexadecimal string, for storage.
-            return ByteArrayUtils.bytesToHex(hashBytes);
-        } catch (NoSuchAlgorithmException e) {
+            // Convert the hashes into hexadecimal strings, for storage.
+            return new String[] {
+                ByteArrayUtils.bytesToHex(factory.generateSecret(spec).getEncoded()),
+                ByteArrayUtils.bytesToHex(salt),
+            };
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
     }

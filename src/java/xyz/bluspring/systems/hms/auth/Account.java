@@ -11,7 +11,7 @@ public class Account {
         DataSerializer.UUID_SERIALIZER, Account::getUUID,
         DataSerializer.STRING, Account::getEmail,
         DataSerializer.STRING, Account::getDisplayName,
-        DataSerializer.STRING, Account::getPasswordHash,
+        DataSerializer.STRING, Account::getPasswordHashWithSalt,
         Account::new
     );
 
@@ -19,14 +19,14 @@ public class Account {
     private final UUID uuid;
     private String email;
     private String displayName;
-    private String passwordHash;
+    private String passwordHashWithSalt;
 
-    public Account(AccountType accountType, UUID uuid, String email, String displayName, String passwordHash) {
+    public Account(AccountType accountType, UUID uuid, String email, String displayName, String passwordHashWithSalt) {
         this.accountType = accountType;
         this.uuid = uuid;
         this.email = email;
         this.displayName = displayName;
-        this.passwordHash = passwordHash;
+        this.passwordHashWithSalt = passwordHashWithSalt;
     }
 
     public AccountType getAccountType() {
@@ -53,11 +53,11 @@ public class Account {
         this.displayName = displayName;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPasswordHashWithSalt() {
+        return passwordHashWithSalt;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPasswordHashWithSalt(String passwordHash) {
+        this.passwordHashWithSalt = passwordHash;
     }
 }
