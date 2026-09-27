@@ -18,7 +18,7 @@ public abstract class HospitalRoom<T extends HospitalRoom<T>> implements DataSer
 
     @Override
     public final DataSerializer<T> getSerializer() {
-        return this.getType().getSerializer();
+        return (DataSerializer<T>) this.getType().getSerializer();
     }
 
     public enum Type {
@@ -32,8 +32,8 @@ public abstract class HospitalRoom<T extends HospitalRoom<T>> implements DataSer
             this.serializer = serializer;
         }
 
-        public <T extends HospitalRoom<T>> DataSerializer<T> getSerializer() {
-            return (DataSerializer<T>) serializer;
+        public DataSerializer<HospitalRoom<?>> getSerializer() {
+            return (DataSerializer<HospitalRoom<?>>) serializer;
         }
 
         public static final DataSerializer<Type> SERIALIZER = DataSerializer.fromEnum(Type.class);
