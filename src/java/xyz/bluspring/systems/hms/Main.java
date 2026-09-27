@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import xyz.bluspring.systems.hms.auth.AccountType;
+import xyz.bluspring.systems.hms.auth.AuthManager;
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
@@ -79,9 +81,11 @@ public class Main {
         ManagerDataStorage.INSTANCE.load();
         DoctorDataStorage.INSTANCE.load();
 
-        if (IS_TESTING) { // Add testing data
-            System.out.println("Testing data enabled!");
-            // TODO
+        // Make sure we always have at least one admin account.
+        AuthManager adminAuthManager = LoginScreen.getAuthManager(AccountType.ADMIN);
+        if (adminAuthManager.getAccounts().isEmpty()) {
+            System.out.println("No admin accounts detected, creating default admin account.");
+            adminAuthManager.create("root@admin.com", "Root Account", "root1234");
         }
 
         window.getContentPane().setLayout(new java.awt.BorderLayout());

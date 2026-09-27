@@ -27,6 +27,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import xyz.bluspring.systems.hms.admin.AdminUI;
 import xyz.bluspring.systems.hms.auth.Account;
 import xyz.bluspring.systems.hms.auth.AccountType;
 import xyz.bluspring.systems.hms.auth.AuthManager;
@@ -174,6 +175,9 @@ public class LoginScreen extends JPanel {
                     return;
                 }
 
+                chosenPatient.setAssignedDoctor(doctor);
+                RoleManager.INSTANCE.save();
+
                 var gui = new DoctorGUI(doctor, chosenPatient);
                 showOnWindow(gui);
             }
@@ -186,7 +190,9 @@ public class LoginScreen extends JPanel {
 
                 showOnWindow(manager.createDashboardUI());
             }
-        case ADMIN -> JOptionPane.showMessageDialog(parent, "The Admin dashboard hasn't been built yet."); // TODO
+        case ADMIN -> {
+            showOnWindow(AdminUI.openAdminUI(account));
+        }
         }
     }
 
@@ -260,6 +266,7 @@ public class LoginScreen extends JPanel {
 
             List<AccountType> types = new ArrayList<>(List.of(AccountType.values()));
             Collections.reverse(types);
+            types.remove(AccountType.ADMIN);
             roleSelector = new JComboBox<>(types.toArray(new AccountType[0]));
             nameField = new JTextField();
             addressField = new JTextField();
@@ -284,7 +291,7 @@ public class LoginScreen extends JPanel {
             var patientFields = new JPanel();
             patientFields.setLayout(new BoxLayout(patientFields, BoxLayout.Y_AXIS));
             patientFields.add(label("Date of Birth:"));
-            ComponentHelper.configureFieldFilters(dateOfBirthField, Character::isDigit);
+            ComponentHelper.configureFieldFilters(dateOfBirthField, c -> Character.isDigit(c) || c == '-');
             patientFields.add(dateOfBirthField);
             patientFields.add(Box.createVerticalStrut(10));
             patientFields.add(label("Gender:"));
@@ -434,7 +441,7 @@ public class LoginScreen extends JPanel {
                         RoleManager.INSTANCE.save();
                     }
                     case ADMIN -> {
-                        // Admin has no linked role object yet; only the login Account is created.
+                        throw new IllegalStateException("You're not supposed to be able to create an admin account!");
                     }
                 }
 
