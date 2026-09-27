@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -36,6 +37,8 @@ import xyz.bluspring.systems.hms.role.patient.PatientDashboard;
 import xyz.bluspring.systems.hms.role.patient.PatientEditForm;
 import xyz.bluspring.systems.hms.role.patient.PatientRecordsPanel;
 import xyz.bluspring.systems.hms.role.patient.RatingForm;
+import xyz.bluspring.systems.hms.ui.ComponentHelper;
+import xyz.bluspring.systems.hms.utils.Utils;
 
 /**
  * The screen shown on startup, letting a user log in or register,
@@ -89,12 +92,9 @@ public class LoginScreen extends JPanel {
         roleSelector.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         var loginButton = new JButton("Log In");
-        var registerButton = new JButton("Register");
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         loginButton.addActionListener(e -> login());
-        registerButton.addActionListener(e -> openRegisterScreen());
 
         var typeLabel = label("Account Type:");
         var emailLabel = label("Email:");
@@ -114,7 +114,16 @@ public class LoginScreen extends JPanel {
         this.add(Box.createVerticalStrut(20));
         this.add(loginButton);
         this.add(Box.createVerticalStrut(5));
-        this.add(registerButton);
+
+        this.add(Utils.make(new JPanel(new FlowLayout(FlowLayout.CENTER)), signUp -> {
+            signUp.setOpaque(false);
+            signUp.add(new JLabel("Not a user? ")).setForeground(Color.BLACK);
+
+            signUp.add(Utils.make(new JButton("Create an account"), button -> {
+                ComponentHelper.makeHyperlink(button);
+                button.addActionListener(e -> openRegisterScreen());
+            }));
+        }));
     }
 
     private void login() {
@@ -124,20 +133,20 @@ public class LoginScreen extends JPanel {
 
         try {
             Account account = getAuthManager(type).login(email, password);
-            routeToDashboard(type, account);
+            routeToDashboard(this, type, account);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void routeToDashboard(AccountType type, Account account) {
+    private static void routeToDashboard(JComponent parent, AccountType type, Account account) {
         String id = account.getUUID().toString();
 
         switch (type) {
             case PATIENT -> {
                 Patient patient = RoleManager.INSTANCE.findPatientById(id);
                 if (patient == null) {
-                    JOptionPane.showMessageDialog(this, "No patient record linked to this account.");
+                    JOptionPane.showMessageDialog(parent, "No patient record linked to this account.");
                     return;
                 }
 
@@ -152,11 +161,11 @@ public class LoginScreen extends JPanel {
             case DOCTOR -> {
                 Doctor doctor = RoleManager.INSTANCE.findDoctorById(id);
                 if (doctor == null) {
-                    JOptionPane.showMessageDialog(this, "No doctor record linked to this account.");
+                    JOptionPane.showMessageDialog(parent, "No doctor record linked to this account.");
                     return;
                 }
 
-                Patient chosenPatient = choosePatient();
+                Patient chosenPatient = choosePatient(parent);
                 if (chosenPatient == null) {
                     return;
                 }
@@ -166,13 +175,13 @@ public class LoginScreen extends JPanel {
             case MEDICAL_MANAGER -> {
                 MedicalManager manager = RoleManager.INSTANCE.findManagerById(id);
                 if (manager == null) {
-                    JOptionPane.showMessageDialog(this, "No manager record linked to this account.");
+                    JOptionPane.showMessageDialog(parent, "No manager record linked to this account.");
                     return;
                 }
 
                 showOnWindow(manager.createDashboardUI());
             }
-            case ADMIN -> JOptionPane.showMessageDialog(this, "The Admin dashboard hasn't been built yet.");
+        case ADMIN -> JOptionPane.showMessageDialog(parent, "The Admin dashboard hasn't been built yet."); // TODO
         }
     }
 
@@ -180,18 +189,18 @@ public class LoginScreen extends JPanel {
      * Doctor's dashboard currently needs a specific patient chosen up-front,
      * so this shows a simple picker listing every registered patient.
      */
-    private Patient choosePatient() {
+    private static Patient choosePatient(JComponent parent) {
         var patients = RoleManager.INSTANCE.getPatients();
 
         if (patients.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There are no registered patients yet.");
+            JOptionPane.showMessageDialog(parent, "There are no registered patients yet.");
             return null;
         }
 
         Patient[] options = patients.toArray(new Patient[0]);
 
         return (Patient) JOptionPane.showInputDialog(
-            this,
+            parent,
             "Choose a patient to view:",
             "Select Patient",
             JOptionPane.PLAIN_MESSAGE,
@@ -201,7 +210,7 @@ public class LoginScreen extends JPanel {
         );
     }
 
-    private void showOnWindow(JComponent component) {
+    private static void showOnWindow(JComponent component) {
         Main.reset();
         JFrame frame = Main.getFrame();
         frame.getContentPane().setLayout(new BorderLayout());
@@ -243,7 +252,10 @@ public class LoginScreen extends JPanel {
 
             var mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            roleSelector = new JComboBox<>(AccountType.values());
+
+            List<AccountType> types = new ArrayList<>(List.of(AccountType.values()));
+            Collections.reverse(types);
+            roleSelector = new JComboBox<>(types.toArray(new AccountType[0]));
             nameField = new JTextField();
             addressField = new JTextField();
             emailField = new JTextField();
@@ -323,7 +335,12 @@ public class LoginScreen extends JPanel {
             submitButton.addActionListener(e -> submit());
             submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            mainPanel.add(Box.createVerticalStrut(10));
+            var title = label("Hospital Management System - Register");
+            title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            mainPanel.add(Box.createVerticalStrut(20));
+            mainPanel.add(title);
+            mainPanel.add(Box.createVerticalStrut(20));
             mainPanel.add(label("Account Type:"));
             mainPanel.add(roleSelector);
             mainPanel.add(Box.createVerticalStrut(10));
@@ -342,6 +359,21 @@ public class LoginScreen extends JPanel {
 
             submitPanel.add(Box.createVerticalStrut(10));
             submitPanel.add(submitButton);
+
+            submitPanel.add(Utils.make(new JPanel(new FlowLayout(FlowLayout.CENTER)), signUp -> {
+                signUp.setOpaque(false);
+                signUp.add(new JLabel("Already a user? ")).setForeground(Color.BLACK);
+
+                signUp.add(Utils.make(new JButton("Log in"), button -> {
+                    ComponentHelper.makeHyperlink(button);
+                    button.addActionListener(e -> {
+                        Main.reset();
+                        var dialog = new LoginScreen();
+                        Main.getFrame().getContentPane().add(dialog);
+                        Main.refresh();
+                    });
+                }));
+            }));
 
             this.add(mainPanel);
             this.add(rolePanel);
@@ -387,6 +419,8 @@ public class LoginScreen extends JPanel {
                         // Admin has no linked role object yet; only the login Account is created.
                     }
                 }
+
+                routeToDashboard(this, type, account);
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid age.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException e) {

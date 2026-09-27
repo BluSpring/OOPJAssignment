@@ -113,11 +113,11 @@ public class ComponentHelper {
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         button.setFont(button.getFont().deriveFont(attributes));
 
-        button.setForeground(Color.WHITE);
+        button.setForeground(Color.BLACK);
         button.setBorder(new EmptyBorder(2, 2, 2, 2));
         button.setBackground(ColorUtils.NONE);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        setForegroundHoverColor(button, new Color(0xFEFF00));
+        setForegroundHoverColor(button, Color.BLUE);
     }
 }

@@ -35,3 +35,4 @@ bin/
 .gradle/
 build/
 run/
+data/
