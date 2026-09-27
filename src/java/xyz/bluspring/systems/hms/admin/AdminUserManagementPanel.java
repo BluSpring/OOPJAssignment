@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,6 +26,8 @@ import xyz.bluspring.systems.hms.Main;
 import xyz.bluspring.systems.hms.auth.Account;
 import xyz.bluspring.systems.hms.auth.AccountType;
 import xyz.bluspring.systems.hms.auth.AuthManager;
+import xyz.bluspring.systems.hms.data.RoleManager;
+import xyz.bluspring.systems.hms.role.manager.MedicalManager;
 import xyz.bluspring.systems.hms.ui.ComponentHelper;
 import xyz.bluspring.systems.hms.ui.PlaceholderPasswordTextField;
 import xyz.bluspring.systems.hms.ui.PlaceholderTextField;
@@ -152,6 +155,10 @@ public class AdminUserManagementPanel extends JPanel {
 
         var email = new PlaceholderTextField("E-mail");
         var displayName = new PlaceholderTextField("Display Name");
+        var managerSelector = new JComboBox<>(RoleManager.INSTANCE.getManagers().toArray(new MedicalManager[0]));
+
+        email.setMaximumSize(new Dimension(300, 30));
+        displayName.setMaximumSize(new Dimension(300, 30));
 
         {
             var panel = new JPanel();
@@ -176,6 +183,20 @@ public class AdminUserManagementPanel extends JPanel {
             );
 
             mainPanel.add(panel);
+
+            if (account.getAccountType() == AccountType.DOCTOR) {
+                panel.add(new JLabel("Assigned Manager"));
+
+                managerSelector.setRenderer(new javax.swing.DefaultListCellRenderer() {
+                    @Override
+                    public Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                        String text = (value instanceof MedicalManager manager) ? manager.getProfile().getDisplayName() : "";
+                        return super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
+                    }
+                });
+
+                panel.add(managerSelector);
+            }
         }
 
         {
@@ -204,6 +225,19 @@ public class AdminUserManagementPanel extends JPanel {
 
                         manager.save();
                     });
+
+                    if (account.getAccountType() == AccountType.DOCTOR) {
+                        var item = managerSelector.getSelectedItem();
+                        var doctor = RoleManager.INSTANCE.findDoctorById(account.getUUID().toString());
+
+                        if (doctor != null) {
+                            if (item != null) {
+                                doctor.setAssignedManager((MedicalManager) item);
+                            } else {
+                                doctor.setAssignedManager(null);
+                            }
+                        }
+                    }
 
                     var changeEvent = (ActionListener) e -> {
                         // Disable button if the email or display name is blank - we do not allow empty emails or display names.
