@@ -299,6 +299,8 @@ public class AdminUserManagementPanel extends JPanel {
                     button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                     button.addActionListener(e -> {
+                        frame.setVisible(false);
+                        frame.dispose();
                         onExit.run();
                     });
                 })
@@ -326,7 +328,7 @@ public class AdminUserManagementPanel extends JPanel {
 
         frame.getContentPane().add(mainPanel);
 
-        frame.setPreferredSize(new Dimension(1280, 768));
+        frame.setPreferredSize(new Dimension(450, 400));
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
@@ -460,7 +462,8 @@ public class AdminUserManagementPanel extends JPanel {
                     button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                     button.addActionListener(e -> {
-                        showAccountDetailsScreen(authManager, account, account, onExit);
+                        window.setVisible(false);
+                        window.dispose();
                     });
                 })
             );
