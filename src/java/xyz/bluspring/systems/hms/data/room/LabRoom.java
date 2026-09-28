@@ -12,7 +12,7 @@ import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 public class LabRoom extends TestRequestableRoom<LabRoom> implements MultiDoctorAssignableRoom {
     public static final DataSerializer<LabRoom> SERIALIZER = RecordDataSerializer.of(
         Doctor.REFERENCE_SERIALIZER.list(), LabRoom::getAssignedDoctors,
-        MedicalTestRequest.REFERENCE_SERIALIZER, LabRoom::getCurrentRequest,
+        MedicalTestRequest.getReferenceSerializer(), LabRoom::getCurrentRequest,
         LabRoom::new
     );
 
@@ -23,7 +23,7 @@ public class LabRoom extends TestRequestableRoom<LabRoom> implements MultiDoctor
     }
 
     public LabRoom(List<Doctor> doctors, MedicalTestRequest request) {
-        super(Type.INPATIENT_WARD, request);
+        super(Type.LAB, request);
         this.assignedDoctors.addAll(doctors);
     }
 

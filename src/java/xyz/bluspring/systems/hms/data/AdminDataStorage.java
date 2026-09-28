@@ -29,11 +29,11 @@ public class AdminDataStorage {
 
     public void save() {
         DataSerializers.serializeValues(InsuranceNetwork.SERIALIZER, INSURANCE_NETWORKS_FILE, insuranceNetworks);
-        DataSerializers.serializeValues(HospitalRoom.SERIALIZER, HOSPITAL_ROOMS_FILE, hospitalRooms);
+        DataSerializers.serializeValues(HospitalRoom.SERIALIZER.get(), HOSPITAL_ROOMS_FILE, hospitalRooms);
     }
 
     public void load() {
         DataSerializers.deserializeLines(InsuranceNetwork.SERIALIZER, INSURANCE_NETWORKS_FILE, insuranceNetworks);
-        DataSerializers.deserializeLines(HospitalRoom.SERIALIZER, HOSPITAL_ROOMS_FILE, hospitalRooms);
+        DataSerializers.deserializeLines(HospitalRoom.SERIALIZER.get(), HOSPITAL_ROOMS_FILE, hospitalRooms);
     }
 }

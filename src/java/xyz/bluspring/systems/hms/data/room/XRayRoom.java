@@ -14,7 +14,7 @@ public class XRayRoom extends TestRequestableRoom<XRayRoom> implements MultiDoct
     public static final DataSerializer<XRayRoom> SERIALIZER = RecordDataSerializer.of(
         Doctor.REFERENCE_SERIALIZER.list(), XRayRoom::getAssignedDoctors,
         Patient.REFERENCE_SERIALIZER, XRayRoom::getAssignedPatient,
-        MedicalTestRequest.REFERENCE_SERIALIZER, XRayRoom::getCurrentRequest,
+        MedicalTestRequest.getReferenceSerializer(), XRayRoom::getCurrentRequest,
         XRayRoom::new
     );
 
@@ -26,7 +26,7 @@ public class XRayRoom extends TestRequestableRoom<XRayRoom> implements MultiDoct
     }
 
     public XRayRoom(List<Doctor> doctors, Patient patient, MedicalTestRequest request) {
-        super(Type.INPATIENT_WARD, request);
+        super(Type.X_RAY, request);
         this.assignedDoctors.addAll(doctors);
         this.assignedPatient = patient;
     }

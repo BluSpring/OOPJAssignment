@@ -1,6 +1,7 @@
 package xyz.bluspring.systems.hms.admin;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -119,15 +120,21 @@ public class AdminRoomAllocationPanel extends JPanel {
 
             rooms.sort(Comparator.comparing(HospitalRoom::isOccupied));
             for (HospitalRoom<?> room : rooms) {
-                var roomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                roomPanel.add(new JLabel("Type: " + room.getType().getProperName()));
+                var roomPanel = new JPanel();
+                roomPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                roomPanel.setBorder(new TitledBorder("Type: " + room.getType().getProperName()));
+                roomPanel.setPreferredSize(new Dimension(820, 100));
 
                 if (room instanceof MultiDoctorAssignableRoom doctorAssignableRoom) {
-                    roomPanel.add(new JLabel("Doctors: " + String.join(", ", doctorAssignableRoom.getAssignedDoctors().stream().map(Doctor::toString).toList())));
+                    roomPanel.add(new JLabel("Doctors: " + (doctorAssignableRoom.getAssignedDoctors().isEmpty() ? "(empty)" : String.join(", ", doctorAssignableRoom.getAssignedDoctors().stream().map(Doctor::toString).toList()))));
                 }
 
                 if (room instanceof PatientAssignableRoom patientAssignableRoom) {
-                    roomPanel.add(new JLabel("Patient: " + patientAssignableRoom.getAssignedPatient().toString()));
+                    if (patientAssignableRoom.getAssignedPatient() != null) {
+                        roomPanel.add(new JLabel("Patient: " + patientAssignableRoom.getAssignedPatient().toString()));
+                    } else {
+                        roomPanel.add(new JLabel("Patient: (none)"));
+                    }
                 }
 
                 if (room instanceof TestRequestableRoom<?> requestableRoom) {
@@ -190,13 +197,20 @@ public class AdminRoomAllocationPanel extends JPanel {
                     }
                 });
 
+                deleteRoomButton.setPreferredSize(new Dimension(140, 30));
+                roomPanel.add(deleteRoomButton);
+
                 roomsPanel.add(roomPanel);
             }
+
+            roomsMainPanel.add(topPanel);
 
             var scrollPane = new JScrollPane(roomsPanel);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            this.add(scrollPane);
+            scrollPane.setPreferredSize(new Dimension(820, 290));
+            roomsMainPanel.add(scrollPane);
+            this.add(roomsMainPanel);
         }
     }
 

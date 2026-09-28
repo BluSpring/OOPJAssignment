@@ -79,8 +79,32 @@ public abstract class DataSerializer<T> {
     }
 
     public DataSerializer<List<T>> list() {
-        return DataSerializer.<List<T>>of(list -> DataSerializers.writeSegmentedLine(list.stream().map(this::serialize).toList()),
-                data -> new ArrayList<>(DataSerializers.readSegmentedLine(data).stream().map(this::deserialize).toList()))
+        return DataSerializer.<List<T>>of(
+                list -> {
+                    var lines = new ArrayList<String>();
+
+                    for (T value : list) {
+                        try {
+                            lines.add(this.serialize(value));
+                        } catch (Exception e) {
+                            System.err.println("Failed to serialize " + value + " while serializing in list, discarding.");
+                        }
+                    }
+
+                    return DataSerializers.writeSegmentedLine(lines);
+                }, data -> {
+                    var segmented = DataSerializers.readSegmentedLine(data);
+                    var deserialized = new ArrayList<T>();
+                    for (String segment : segmented) {
+                        try {
+                            deserialized.add(this.deserialize(segment));
+                        } catch (Exception e) {
+                            System.err.println("Failed to deserialize \"" + segment + "\" while deserializing in list, discarding.");
+                        }
+                    }
+
+                    return deserialized;
+                })
             .orElse(ArrayList::new);
     }
 

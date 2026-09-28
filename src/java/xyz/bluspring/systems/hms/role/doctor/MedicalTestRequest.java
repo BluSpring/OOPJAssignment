@@ -6,6 +6,7 @@ import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.records.MedicalTestType;
 import xyz.bluspring.systems.hms.data.records.TestStatus;
 import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.utils.Utils;
 import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
@@ -21,16 +22,19 @@ public class MedicalTestRequest implements DataSerializable<MedicalTestRequest> 
         MedicalTestRequest::new
     );
 
-    public static final DataSerializer<MedicalTestRequest> REFERENCE_SERIALIZER = DataSerializer.UUID_SERIALIZER
-        .map(uuid -> {
-            for (MedicalTestRequest request : DoctorDataStorage.INSTANCE.getMedicalTestRequests()) {
-                if (request.getId().equals(uuid)) {
-                    return request;
+    // don't ask. things were just that broken.
+    public static DataSerializer<MedicalTestRequest> getReferenceSerializer() {
+        return DataSerializer.UUID_SERIALIZER
+            .map(uuid -> {
+                for (MedicalTestRequest request : DoctorDataStorage.INSTANCE.getMedicalTestRequests()) {
+                    if (request.getId().equals(uuid)) {
+                        return request;
+                    }
                 }
-            }
 
-            return null;
-        }, request -> request != null ? request.getId() : null);
+                return null;
+            }, request -> request != null ? request.getId() : Utils.NIL_UUID);
+    }
 
     private final UUID id;
     private final Patient patient;

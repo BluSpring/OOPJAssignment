@@ -3,11 +3,12 @@ package xyz.bluspring.systems.hms.data.room;
 import java.util.List;
 import java.util.function.Supplier;
 
+import xyz.bluspring.systems.hms.utils.Utils;
 import xyz.bluspring.systems.hms.utils.data.DataSerializable;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 
 public abstract class HospitalRoom<T extends HospitalRoom<T>> implements DataSerializable<T> {
-    public static final DataSerializer<HospitalRoom<?>> SERIALIZER = Type.SERIALIZER.dispatch(Type::getSerializer, HospitalRoom::getType);
+    public static final Supplier<DataSerializer<HospitalRoom<?>>> SERIALIZER = Utils.memoize(() -> Type.SERIALIZER.dispatch(Type::getSerializer, HospitalRoom::getType));
 
     private final Type type;
 

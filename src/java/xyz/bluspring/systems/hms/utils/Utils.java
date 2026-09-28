@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
 
@@ -50,6 +51,24 @@ public class Utils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Creates a supplier that runs the backing supplier once and caches the value.
+     */
+    public static <T> Supplier<T> memoize(Supplier<T> supplier) {
+        return new Supplier<>() {
+            private T value;
+
+            @Override
+            public T get() {
+                if (value == null) {
+                    value = supplier.get();
+                }
+
+                return value;
+            }
+        };
     }
 
     public static <T> T make(T object, Consumer<T> consumer) {

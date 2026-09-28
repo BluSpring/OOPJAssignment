@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import xyz.bluspring.systems.hms.auth.AccountType;
 import xyz.bluspring.systems.hms.auth.AuthManager;
+import xyz.bluspring.systems.hms.data.AdminDataStorage;
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
@@ -80,6 +81,7 @@ public class Main {
         RoleManager.INSTANCE.load();
         ManagerDataStorage.INSTANCE.load();
         DoctorDataStorage.INSTANCE.load();
+        AdminDataStorage.INSTANCE.load();
 
         // Make sure we always have at least one admin account.
         AuthManager adminAuthManager = LoginScreen.getAuthManager(AccountType.ADMIN);

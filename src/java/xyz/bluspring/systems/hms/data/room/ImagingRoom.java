@@ -14,7 +14,7 @@ public class ImagingRoom extends TestRequestableRoom<ImagingRoom> implements Mul
     public static final DataSerializer<ImagingRoom> SERIALIZER = RecordDataSerializer.of(
         Doctor.REFERENCE_SERIALIZER.list(), ImagingRoom::getAssignedDoctors,
         Patient.REFERENCE_SERIALIZER, ImagingRoom::getAssignedPatient,
-        MedicalTestRequest.REFERENCE_SERIALIZER, ImagingRoom::getCurrentRequest,
+        MedicalTestRequest.getReferenceSerializer(), ImagingRoom::getCurrentRequest,
         ImagingRoom::new
     );
 
@@ -26,7 +26,7 @@ public class ImagingRoom extends TestRequestableRoom<ImagingRoom> implements Mul
     }
 
     public ImagingRoom(List<Doctor> doctors, Patient patient, MedicalTestRequest request) {
-        super(Type.INPATIENT_WARD, request);
+        super(Type.IMAGING, request);
         this.assignedDoctors.addAll(doctors);
         this.assignedPatient = patient;
     }
