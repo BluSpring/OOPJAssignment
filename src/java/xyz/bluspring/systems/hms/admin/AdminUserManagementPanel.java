@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -46,8 +48,44 @@ public class AdminUserManagementPanel extends JPanel {
             return;
         }
 
-        var mainPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        var mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setOpaque(false);
+
+        var sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.X_AXIS));
+
+        var createAccountBtn = new JButton("Create Account");
+        createAccountBtn.addActionListener(e -> {
+            JFrame frame = new JFrame("Creating a new account");
+            LoginScreen.openRegisterScreen(frame, true, _ -> {
+                frame.setVisible(false);
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispose();
+            });
+
+            frame.setPreferredSize(new Dimension(843, 600));
+            frame.setVisible(true);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    super.windowClosing(e);
+                    frame.dispose();
+
+                    // we want to go back to the accounts page.
+                    Main.reset();
+                    var tabs = AdminUI.openAdminUI(account);
+                    tabs.setSelectedIndex(0);
+                    window.getContentPane().add(tabs);
+                    Main.refresh();
+                }
+            });
+        });
+        sidePanel.add(createAccountBtn);
+        mainPanel.add(sidePanel);
 
         var secondPanel = new JPanel();
         secondPanel.setOpaque(false);
@@ -275,6 +313,9 @@ public class AdminUserManagementPanel extends JPanel {
                             Main.reset();
                             Main.getFrame().getContentPane().add(new LoginScreen());
                             Main.refresh();
+
+                            frame.setVisible(false);
+                            frame.dispose();
                         });
                     })
                 );

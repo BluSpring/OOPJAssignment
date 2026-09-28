@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -232,9 +233,14 @@ public class LoginScreen extends JPanel {
 
     private void openRegisterScreen() {
         Main.reset();
-        var dialog = new RegisterScreen();
+        var dialog = new RegisterScreen(false);
         Main.getFrame().getContentPane().add(dialog);
         Main.refresh();
+    }
+
+    public static void openRegisterScreen(JFrame frame, boolean withAdmin, Consumer<Account> onRegistered) {
+        var dialog = new RegisterScreen(withAdmin, onRegistered);
+        frame.getContentPane().add(dialog);
     }
 
     /**
@@ -257,7 +263,18 @@ public class LoginScreen extends JPanel {
         private final JTextField specializationField;
         private final JComboBox<MedicalManager> managerSelector;
 
-        RegisterScreen() {
+        private Consumer<Account> onRegistered;
+
+
+        RegisterScreen(boolean withAdmin) {
+            this(withAdmin, _ -> {
+                throw new IllegalStateException();
+            });
+            this.onRegistered = account -> routeToDashboard(this, account.getAccountType(), account);
+        }
+
+        RegisterScreen(boolean withAdmin, Consumer<Account> onRegistered) {
+            this.onRegistered = onRegistered;
             this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             this.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 
@@ -266,7 +283,9 @@ public class LoginScreen extends JPanel {
 
             List<AccountType> types = new ArrayList<>(List.of(AccountType.values()));
             Collections.reverse(types);
-            types.remove(AccountType.ADMIN);
+            if (!withAdmin) {
+                types.remove(AccountType.ADMIN);
+            }
             roleSelector = new JComboBox<>(types.toArray(new AccountType[0]));
             nameField = new JTextField();
             addressField = new JTextField();
@@ -376,20 +395,21 @@ public class LoginScreen extends JPanel {
             submitPanel.add(Box.createVerticalStrut(10));
             submitPanel.add(submitButton);
 
-            submitPanel.add(Utils.make(new JPanel(new FlowLayout(FlowLayout.CENTER)), signUp -> {
-                signUp.setOpaque(false);
-                signUp.add(new JLabel("Already a user? ")).setForeground(Color.BLACK);
+            if (!withAdmin)
+                submitPanel.add(Utils.make(new JPanel(new FlowLayout(FlowLayout.CENTER)), signUp -> {
+                    signUp.setOpaque(false);
+                    signUp.add(new JLabel("Already a user? ")).setForeground(Color.BLACK);
 
-                signUp.add(Utils.make(new JButton("Log in"), button -> {
-                    ComponentHelper.makeHyperlink(button);
-                    button.addActionListener(e -> {
-                        Main.reset();
-                        var dialog = new LoginScreen();
-                        Main.getFrame().getContentPane().add(dialog);
-                        Main.refresh();
-                    });
+                    signUp.add(Utils.make(new JButton("Log in"), button -> {
+                        ComponentHelper.makeHyperlink(button);
+                        button.addActionListener(e -> {
+                            Main.reset();
+                            var dialog = new LoginScreen();
+                            Main.getFrame().getContentPane().add(dialog);
+                            Main.refresh();
+                        });
+                    }));
                 }));
-            }));
 
             this.add(mainPanel);
             this.add(rolePanel);
@@ -445,7 +465,7 @@ public class LoginScreen extends JPanel {
                     }
                 }
 
-                routeToDashboard(this, type, account);
+                this.onRegistered.accept(account);
             } catch (Exception e) {
                 if (account != null) {
                     authManager.deleteAccount(account);

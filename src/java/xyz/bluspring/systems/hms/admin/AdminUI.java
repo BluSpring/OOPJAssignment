@@ -1,12 +1,11 @@
 package xyz.bluspring.systems.hms.admin;
 
-import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
 import xyz.bluspring.systems.hms.auth.Account;
 
 public class AdminUI {
-    public static JComponent openAdminUI(Account account) {
+    public static JTabbedPane openAdminUI(Account account) {
         JTabbedPane tabs = new JTabbedPane();
 
         // todo: user management (doctor assign to managers)
