@@ -87,6 +87,17 @@ public class AdminUserManagementPanel extends JPanel {
                 }
             });
         });
+
+        sidePanel.add(Utils.make(new JButton("Log Out"), button -> {
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            button.addActionListener(e -> {
+                Main.reset();
+                Main.getFrame().getContentPane().add(new LoginScreen());
+                Main.refresh();
+            });
+        }));
+
         sidePanel.add(createAccountBtn);
         mainPanel.add(sidePanel);
 
