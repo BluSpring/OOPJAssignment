@@ -9,7 +9,6 @@ public class AdminUI {
         JTabbedPane tabs = new JTabbedPane();
 
         // todo:
-        //       allocate rooms
         //       config insurance networks
         //       config base consultation rates
         tabs.addTab("User Management", new AdminUserManagementPanel(account));
