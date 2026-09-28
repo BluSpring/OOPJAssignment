@@ -27,6 +27,11 @@ public class PatientRecordsPanel extends JPanel {
         this.add(historyLabel, BorderLayout.NORTH);
 
         recordListModel = new DefaultListModel<>();
+
+        for (MedicalRecord record : patient.getMedicalRecords()) {
+            recordListModel.addElement(record.getSummary());
+        }
+
         var recordList = new JList<>(recordListModel);
 
         var listTitle = new JLabel("Medical Records:");
