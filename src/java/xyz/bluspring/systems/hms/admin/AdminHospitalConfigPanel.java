@@ -37,6 +37,7 @@ public class AdminHospitalConfigPanel extends JPanel {
 
             var nameLabel = new JLabel("Name: ");
             var nameBox = new JTextField();
+            nameBox.setPreferredSize(new Dimension(350, 25));
             var addButton = new JButton("+");
 
             topPanel.add(nameLabel);
@@ -95,15 +96,16 @@ public class AdminHospitalConfigPanel extends JPanel {
 
         {
             var configPanel = new JPanel();
-            configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.Y_AXIS));
+            configPanel.setLayout(new FlowLayout());
             configPanel.setBorder(new TitledBorder("Hospital Configuration"));
 
             configPanel.add(new JLabel("Base Consultation Rate (RM):"));
             var baseConsultationRate = (new JSpinner(new SpinnerNumberModel(AdminDataStorage.INSTANCE.getBaseConsultationRate(), 0f, 100_000_000f, 1f)));
+            baseConsultationRate.setPreferredSize(new Dimension(75, 20));
             configPanel.add(baseConsultationRate);
 
             baseConsultationRate.addChangeListener(_ -> {
-                AdminDataStorage.INSTANCE.setBaseConsultationRate((float) baseConsultationRate.getValue());
+                AdminDataStorage.INSTANCE.setBaseConsultationRate((float) (double) baseConsultationRate.getValue());
             });
 
             this.add(configPanel);
