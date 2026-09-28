@@ -13,7 +13,7 @@ public class AdminUI {
         //       config insurance networks
         //       config base consultation rates
         tabs.addTab("User Management", new AdminUserManagementPanel(account));
-        tabs.addTab("Room Allocation", new AdminRoomAllocationPanel());
+        tabs.addTab("Room Allocation", new AdminRoomAllocationPanel(account));
         tabs.addTab("Hospital Configuration", new AdminHospitalConfigPanel());
         return tabs;
     }

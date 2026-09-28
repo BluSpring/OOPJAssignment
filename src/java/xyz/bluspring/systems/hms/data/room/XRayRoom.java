@@ -5,14 +5,16 @@ import java.util.List;
 
 import xyz.bluspring.systems.hms.data.AdminDataStorage;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
+import xyz.bluspring.systems.hms.role.doctor.MedicalTestRequest;
 import xyz.bluspring.systems.hms.role.patient.Patient;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class XRayRoom extends HospitalRoom<XRayRoom> {
+public class XRayRoom extends TestRequestableRoom<XRayRoom> implements MultiDoctorAssignableRoom, PatientAssignableRoom {
     public static final DataSerializer<XRayRoom> SERIALIZER = RecordDataSerializer.of(
         Doctor.REFERENCE_SERIALIZER.list(), XRayRoom::getAssignedDoctors,
         Patient.REFERENCE_SERIALIZER, XRayRoom::getAssignedPatient,
+        MedicalTestRequest.REFERENCE_SERIALIZER, XRayRoom::getCurrentRequest,
         XRayRoom::new
     );
 
@@ -20,24 +22,37 @@ public class XRayRoom extends HospitalRoom<XRayRoom> {
     private Patient assignedPatient;
 
     public XRayRoom(List<Doctor> doctors, Patient patient) {
-        super(Type.INPATIENT_WARD);
+        this(doctors, patient, null);
+    }
+
+    public XRayRoom(List<Doctor> doctors, Patient patient, MedicalTestRequest request) {
+        super(Type.INPATIENT_WARD, request);
         this.assignedDoctors.addAll(doctors);
         this.assignedPatient = patient;
     }
 
+    @Override
+    public boolean isOccupied() {
+        return !this.getAssignedDoctors().isEmpty() && this.getAssignedPatient() != null;
+    }
+
+    @Override
     public List<Doctor> getAssignedDoctors() {
         return assignedDoctors;
     }
 
+    @Override
     public void addAssignedDoctor(Doctor doctor) {
         this.assignedDoctors.add(doctor);
         AdminDataStorage.INSTANCE.save();
     }
 
+    @Override
     public Patient getAssignedPatient() {
         return assignedPatient;
     }
 
+    @Override
     public void setAssignedPatient(Patient patient) {
         this.assignedPatient = patient;
         AdminDataStorage.INSTANCE.save();

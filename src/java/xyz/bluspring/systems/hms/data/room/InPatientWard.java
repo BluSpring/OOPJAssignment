@@ -9,7 +9,7 @@ import xyz.bluspring.systems.hms.role.patient.Patient;
 import xyz.bluspring.systems.hms.utils.data.DataSerializer;
 import xyz.bluspring.systems.hms.utils.data.RecordDataSerializer;
 
-public class InPatientWard extends HospitalRoom<InPatientWard> {
+public class InPatientWard extends HospitalRoom<InPatientWard> implements MultiDoctorAssignableRoom, PatientAssignableRoom {
     public static final DataSerializer<InPatientWard> SERIALIZER = RecordDataSerializer.of(
         Doctor.REFERENCE_SERIALIZER.list(), InPatientWard::getAssignedDoctors,
         Patient.REFERENCE_SERIALIZER, InPatientWard::getAssignedPatient,
@@ -24,6 +24,11 @@ public class InPatientWard extends HospitalRoom<InPatientWard> {
 
         this.assignedDoctors.addAll(doctors);
         this.assignedPatient = patient;
+    }
+
+    @Override
+    public boolean isOccupied() {
+        return !this.getAssignedDoctors().isEmpty() && this.getAssignedPatient() != null;
     }
 
     public List<Doctor> getAssignedDoctors() {

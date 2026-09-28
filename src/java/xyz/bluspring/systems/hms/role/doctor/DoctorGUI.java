@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,7 +22,9 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import xyz.bluspring.systems.hms.Main;
+import xyz.bluspring.systems.hms.data.records.MedicalTestType;
 import xyz.bluspring.systems.hms.role.patient.Patient;
+import xyz.bluspring.systems.hms.ui.ComponentHelper;
 import xyz.bluspring.systems.hms.utils.Utils;
 
 public class DoctorGUI extends JPanel {
@@ -43,7 +46,7 @@ public class DoctorGUI extends JPanel {
     private JTextField dosageField;
     private JTextArea instructionsArea;
 
-    private JTextField testTypeField;
+    private JComboBox<MedicalTestType> testTypeBox;
     private JTextArea testReasonArea;
 
     public DoctorGUI(Doctor doctor, Patient patient) {
@@ -213,41 +216,39 @@ public class DoctorGUI extends JPanel {
         JPanel panel =
             createSectionPanel("Vital Signs");
 
-        temperatureField =
-            new JTextField();
+        temperatureField = new JTextField();
+        heartRateField = new JTextField();
+        bloodPressureField = new JTextField();
+        oxygenLevelField = new JTextField();
 
-        heartRateField =
-            new JTextField();
-
-        bloodPressureField =
-            new JTextField();
-
-        oxygenLevelField =
-            new JTextField();
+        ComponentHelper.configureFieldFilters(temperatureField, c -> Character.isDigit(c) || c == '.' || c == ',');
+        ComponentHelper.configureFieldFilters(heartRateField, Character::isDigit);
+        ComponentHelper.configureFieldFilters(bloodPressureField, Character::isDigit);
+        ComponentHelper.configureFieldFilters(oxygenLevelField, Character::isDigit);
 
         JButton saveButton =
             new JButton("Save Vital Signs");
 
         panel.add(
-            new JLabel("Temperature:")
+            new JLabel("Temperature (°C):")
         );
 
         panel.add(temperatureField);
 
         panel.add(
-            new JLabel("Heart Rate:")
+            new JLabel("Heart Rate (bpm):")
         );
 
         panel.add(heartRateField);
 
         panel.add(
-            new JLabel("Blood Pressure:")
+            new JLabel("Blood Pressure (mmHg):")
         );
 
         panel.add(bloodPressureField);
 
         panel.add(
-            new JLabel("Oxygen Level:")
+            new JLabel("Oxygen Level (%):")
         );
 
         panel.add(oxygenLevelField);
@@ -505,8 +506,7 @@ public class DoctorGUI extends JPanel {
                 "Medical Test Request"
             );
 
-        testTypeField =
-            new JTextField();
+        testTypeBox = new JComboBox<>(MedicalTestType.values());
 
         testReasonArea =
             new JTextArea(3, 20);
@@ -523,7 +523,7 @@ public class DoctorGUI extends JPanel {
             new JLabel("Test Type:")
         );
 
-        panel.add(testTypeField);
+        panel.add(testTypeBox);
 
         panel.add(
             new JLabel("Reason:")
@@ -547,17 +547,14 @@ public class DoctorGUI extends JPanel {
 
     private void requestMedicalTest() {
 
-        String testType =
-            testTypeField
-                .getText()
-                .trim();
+        MedicalTestType testType = (MedicalTestType) testTypeBox.getSelectedItem();
 
         String reason =
             testReasonArea
                 .getText()
                 .trim();
 
-        if (testType.isEmpty()
+        if (testType == null
             || reason.isEmpty()) {
 
             showError(
@@ -578,7 +575,6 @@ public class DoctorGUI extends JPanel {
             "Medical test request saved successfully!"
         );
 
-        testTypeField.setText("");
         testReasonArea.setText("");
     }
 

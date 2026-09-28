@@ -7,6 +7,7 @@ import java.util.List;
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.data.records.MedicalRecord;
+import xyz.bluspring.systems.hms.data.records.MedicalTestType;
 import xyz.bluspring.systems.hms.data.records.Prescription;
 import xyz.bluspring.systems.hms.role.PersonalizableUser;
 import xyz.bluspring.systems.hms.role.Profile;
@@ -122,15 +123,14 @@ public class Doctor extends PersonalizableUser<Doctor> {
 
     public void requestMedicalTest(
         Patient patient,
-        String testType,
+        MedicalTestType testType,
         String reason) {
 
         MedicalTestRequest request = new MedicalTestRequest(
             patient,
             this,
             testType,
-            reason,
-            "Pending"
+            reason
         );
 
         DoctorDataStorage.INSTANCE.saveMedicalTestRequest(request);

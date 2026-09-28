@@ -16,20 +16,29 @@ public abstract class HospitalRoom<T extends HospitalRoom<T>> implements DataSer
         return type;
     }
 
+    public abstract boolean isOccupied();
+
     @Override
     public final DataSerializer<T> getSerializer() {
         return (DataSerializer<T>) this.getType().getSerializer();
     }
 
     public enum Type {
-        CONSULTATION(ConsultationRoom.SERIALIZER), INPATIENT_WARD(InPatientWard.SERIALIZER), LAB(LabRoom.SERIALIZER),
-        X_RAY(XRayRoom.SERIALIZER), IMAGING(ImagingRoom.SERIALIZER),
+        CONSULTATION("Consultation Room", ConsultationRoom.SERIALIZER), INPATIENT_WARD("Inpatient Ward", InPatientWard.SERIALIZER),
+        LAB("Lab Room", LabRoom.SERIALIZER),
+        X_RAY("X-Ray Room", XRayRoom.SERIALIZER), IMAGING("Imaging Room", ImagingRoom.SERIALIZER),
         ;
 
+        private final String properName;
         private final DataSerializer<? extends HospitalRoom<?>> serializer;
 
-        Type(DataSerializer<? extends HospitalRoom<?>> serializer) {
+        Type(String properName, DataSerializer<? extends HospitalRoom<?>> serializer) {
+            this.properName = properName;
             this.serializer = serializer;
+        }
+
+        public String getProperName() {
+            return properName;
         }
 
         public DataSerializer<HospitalRoom<?>> getSerializer() {
