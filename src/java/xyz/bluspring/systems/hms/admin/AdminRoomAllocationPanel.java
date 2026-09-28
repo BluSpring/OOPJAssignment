@@ -194,6 +194,7 @@ public class AdminRoomAllocationPanel extends JPanel {
 
                         AdminDataStorage.INSTANCE.save();
                         DoctorDataStorage.INSTANCE.save();
+                        refreshPage(account);
                     }
                 });
 
