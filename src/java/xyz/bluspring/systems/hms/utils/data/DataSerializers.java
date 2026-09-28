@@ -75,6 +75,23 @@ public class DataSerializers {
         }
     }
 
+    public static <T> void serializeValue(DataSerializer<T> serializer, File file, T value) {
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            try (FileOutputStream stream = new FileOutputStream(file)) {
+                try (OutputStreamWriter streamWriter = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
+                    streamWriter.write(serializer.serialize(value));
+                    streamWriter.write('\n');
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> void deserializeLines(DataSerializer<T> serializer, File file, List<T> list) {
         try {
             if (file.exists()) {
@@ -84,6 +101,20 @@ public class DataSerializers {
                     list.add(serializer.deserialize(line));
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T deserializeFile(DataSerializer<T> serializer, File file) {
+        try {
+            if (file.exists()) {
+                var lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+
+                return serializer.deserialize(lines.getFirst());
+            }
+
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
