@@ -31,8 +31,8 @@ bin/
 *.log
 *.txt
 
-.idea/
-.gradle/
-build/
-run/
-data/
+/.idea/
+/.gradle/
+/build/
+/run/
+/data/
