@@ -8,7 +8,7 @@ public class AdminUI {
     public static JTabbedPane openAdminUI(Account account) {
         JTabbedPane tabs = new JTabbedPane();
 
-        // todo: user management (doctor assign to managers)
+        // todo:
         //       allocate rooms
         //       config insurance networks
         //       config base consultation rates
