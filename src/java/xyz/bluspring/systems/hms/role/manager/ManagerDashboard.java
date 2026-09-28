@@ -162,7 +162,7 @@ public class ManagerDashboard extends JPanel {
         JPanel metricsCard = new JPanel(new GridLayout(5, 2, 10, 8));
         metricsCard.setBorder(BorderFactory.createTitledBorder("Hospital Operational & Financial Metrics"));
 
-        totalDeptsLabel = label(Integer.toString(AdminDataStorage.INSTANCE.getHospitalRooms().size()));
+        totalDeptsLabel = label(Integer.toString(ManagerDataStorage.INSTANCE.readDepartments().size()));
         totalShiftsLabel = label(Integer.toString(ManagerDataStorage.INSTANCE.readShifts().size()));
         totalConsultationsLabel = label(Integer.toString(ManagerDataStorage.INSTANCE.getConsultationCount()));
         standardFeeLabel = label(Utils.formatCurrency(AdminDataStorage.INSTANCE.getBaseConsultationRate()));
