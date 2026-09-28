@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -195,15 +197,20 @@ public class AdminUserManagementPanel extends JPanel {
         var displayName = new PlaceholderTextField("Display Name");
         var managerSelector = new JComboBox<>(RoleManager.INSTANCE.getManagers().toArray(new MedicalManager[0]));
 
+        email.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        displayName.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        managerSelector.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
         email.setMaximumSize(new Dimension(300, 30));
         displayName.setMaximumSize(new Dimension(300, 30));
+        managerSelector.setMaximumSize(new Dimension(300, 30));
 
         {
             var panel = new JPanel();
             panel.setOpaque(false);
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-            panel.add(new JLabel("Email"));
+            panel.add(Utils.make(new JLabel("Email"), label -> label.setAlignmentX(JLabel.CENTER_ALIGNMENT)));
             panel.add(
                 Utils.make(email, field -> {
                     field.setText(account.getEmail());
@@ -212,7 +219,7 @@ public class AdminUserManagementPanel extends JPanel {
                 })
             );
 
-            panel.add(new JLabel("Display Name"));
+            panel.add(Utils.make(new JLabel("Display Name"), label -> label.setAlignmentX(JLabel.CENTER_ALIGNMENT)));
             panel.add(
                 Utils.make(displayName, field -> {
                     field.setText(account.getDisplayName());
@@ -223,7 +230,7 @@ public class AdminUserManagementPanel extends JPanel {
             mainPanel.add(panel);
 
             if (account.getAccountType() == AccountType.DOCTOR) {
-                panel.add(new JLabel("Assigned Manager"));
+                panel.add(Utils.make(new JLabel("Assigned Manager"), label -> label.setAlignmentX(JLabel.CENTER_ALIGNMENT)));
 
                 managerSelector.setRenderer(new javax.swing.DefaultListCellRenderer() {
                     @Override
@@ -242,6 +249,7 @@ public class AdminUserManagementPanel extends JPanel {
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setOpaque(false);
 
+            panel.add(Box.createVerticalStrut(10));
             if (account == accountToNavigate) {
                 panel.add(Utils.make(new JPanel(new FlowLayout(FlowLayout.CENTER)), changePassword -> {
                     changePassword.setOpaque(false);
@@ -250,6 +258,7 @@ public class AdminUserManagementPanel extends JPanel {
                         button.addActionListener(e -> showChangePasswordScreen(frame, manager, account, onExit));
                     }));
                 }));
+                panel.add(Box.createVerticalStrut(10));
             }
 
             panel.add(
@@ -294,6 +303,8 @@ public class AdminUserManagementPanel extends JPanel {
                 })
             );
 
+            panel.add(Box.createVerticalStrut(10));
+
             panel.add(
                 Utils.make(new JButton("Exit"), button -> {
                     button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -305,6 +316,8 @@ public class AdminUserManagementPanel extends JPanel {
                     });
                 })
             );
+
+            panel.add(Box.createVerticalStrut(10));
 
             if (accountToNavigate == account) {
                 panel.add(
@@ -326,7 +339,10 @@ public class AdminUserManagementPanel extends JPanel {
             mainPanel.add(panel);
         }
 
-        frame.getContentPane().add(mainPanel);
+        var scrollable = new JScrollPane(mainPanel);
+        scrollable.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        frame.getContentPane().add(scrollable);
 
         frame.setPreferredSize(new Dimension(450, 400));
         frame.pack();
@@ -473,9 +489,8 @@ public class AdminUserManagementPanel extends JPanel {
 
         window.getContentPane().add(mainPanel);
 
-        window.setPreferredSize(new Dimension(1280, 768));
-        window.setLocationRelativeTo(null);
         window.pack();
+        window.setLocationRelativeTo(null);
 
         window.invalidate();
         window.validate();
