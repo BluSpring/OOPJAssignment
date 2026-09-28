@@ -327,9 +327,9 @@ public class AdminUserManagementPanel extends JPanel {
         frame.getContentPane().add(mainPanel);
 
         frame.setPreferredSize(new Dimension(1280, 768));
-        frame.setLocationRelativeTo(null);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 
     public static void showChangePasswordScreen(JFrame window, AuthManager authManager, Account account, Runnable onExit) {
