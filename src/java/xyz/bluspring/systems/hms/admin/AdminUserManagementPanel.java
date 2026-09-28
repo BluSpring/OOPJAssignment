@@ -20,6 +20,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -145,10 +146,14 @@ public class AdminUserManagementPanel extends JPanel {
                         }
 
                         button.addActionListener(e -> {
-                            authManager.deleteAccount(acc);
-                            Main.reset();
-                            AdminUI.openAdminUI(account);
-                            Main.refresh();
+                            var result = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this account?");
+
+                            if (result == JOptionPane.YES_OPTION) {
+                                authManager.deleteAccount(acc);
+                                Main.reset();
+                                AdminUI.openAdminUI(account);
+                                Main.refresh();
+                            }
                         });
                     }));
 

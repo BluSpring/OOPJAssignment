@@ -7,7 +7,9 @@ import java.util.Comparator;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -18,6 +20,7 @@ import xyz.bluspring.systems.hms.auth.Account;
 import xyz.bluspring.systems.hms.data.AdminDataStorage;
 import xyz.bluspring.systems.hms.data.DoctorDataStorage;
 import xyz.bluspring.systems.hms.data.records.TestStatus;
+import xyz.bluspring.systems.hms.data.room.ConsultationRoom;
 import xyz.bluspring.systems.hms.data.room.HospitalRoom;
 import xyz.bluspring.systems.hms.data.room.MultiDoctorAssignableRoom;
 import xyz.bluspring.systems.hms.data.room.PatientAssignableRoom;
@@ -51,7 +54,7 @@ public class AdminRoomAllocationPanel extends JPanel {
                 requestPanel.add(new JLabel("Status: " + request.getStatus().getProperName()));
 
                 if (request.getStatus() == TestStatus.REQUESTED) {
-                    if (rooms.stream().anyMatch(r -> r.getType() == request.getTestType().getRequiredRoom() && !r.isOccupied())) {
+                    if (rooms.stream().anyMatch(r -> r.getType() == request.getTestType().getRequiredRoom() && !r.isOccupied() && r instanceof TestRequestableRoom<?> trr && trr.getCurrentRequest() == null)) {
                         requestPanel.add(Utils.make(new JButton("Auto-allocate Room"), button -> {
                             button.addActionListener(e -> {
                                 var room = rooms.stream().filter(r -> r.getType() == request.getTestType().getRequiredRoom() && !r.isOccupied())
@@ -65,7 +68,13 @@ public class AdminRoomAllocationPanel extends JPanel {
                                     patientAssignableRoom.setAssignedPatient(request.getPatient());
                                 }
 
+                                if (room instanceof TestRequestableRoom<?> testRequestableRoom) {
+                                    testRequestableRoom.setCurrentRequest(request);
+                                }
+
                                 request.setStatus(TestStatus.WAITING);
+                                AdminDataStorage.INSTANCE.save();
+                                DoctorDataStorage.INSTANCE.save();
 
                                 refreshPage(account);
                             });
@@ -85,9 +94,28 @@ public class AdminRoomAllocationPanel extends JPanel {
         }
 
         {
+            var roomsMainPanel = new JPanel();
+            roomsMainPanel.setLayout(new BoxLayout(roomsMainPanel, BoxLayout.Y_AXIS));
+            roomsMainPanel.setBorder(new TitledBorder("Hospital Rooms"));
+
+            var topPanel = new JPanel();
+            topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+            var roomTypeBox = new JComboBox<>(HospitalRoom.Type.values());
+            topPanel.add(roomTypeBox);
+
+            var createRoomButton = new JButton("+");
+            createRoomButton.addActionListener(_ -> {
+                var type = (HospitalRoom.Type) roomTypeBox.getSelectedItem();
+                AdminDataStorage.INSTANCE.getHospitalRooms().add(type.createDefault());
+                AdminDataStorage.INSTANCE.save();
+
+                refreshPage(account);
+            });
+            topPanel.add(createRoomButton);
+
             var roomsPanel = new JPanel();
             roomsPanel.setLayout(new BoxLayout(roomsPanel, BoxLayout.Y_AXIS));
-            roomsPanel.setBorder(new TitledBorder("Hospital Rooms"));
 
             rooms.sort(Comparator.comparing(HospitalRoom::isOccupied));
             for (HospitalRoom<?> room : rooms) {
@@ -107,6 +135,60 @@ public class AdminRoomAllocationPanel extends JPanel {
                         roomPanel.add(new JLabel("Currently running tests..."));
                     }
                 }
+
+                if (room.isOccupied()) {
+                    var emptyRoomButton = new JButton("Empty Room");
+                    emptyRoomButton.addActionListener(_ -> {
+                        if (room instanceof MultiDoctorAssignableRoom doctorAssignableRoom) {
+                            doctorAssignableRoom.getAssignedDoctors().clear();
+                        }
+
+                        if (room instanceof ConsultationRoom consultationRoom) {
+                            consultationRoom.setAssignedDoctor(null);
+                        }
+
+                        if (room instanceof PatientAssignableRoom patientAssignableRoom) {
+                            patientAssignableRoom.setAssignedPatient(null);
+                        }
+
+                        if (room instanceof TestRequestableRoom<?> requestableRoom) {
+                            var request = requestableRoom.getCurrentRequest();
+                            if (request != null) {
+                                request.setStatus(TestStatus.COMPLETED);
+                            }
+
+                            requestableRoom.setCurrentRequest(null);
+                        }
+
+                        AdminDataStorage.INSTANCE.save();
+                        DoctorDataStorage.INSTANCE.save();
+
+                        refreshPage(account);
+                    });
+
+                    roomPanel.add(emptyRoomButton);
+                }
+
+                var deleteRoomButton = new JButton("Delete Room");
+                deleteRoomButton.addActionListener(_ -> {
+                    var option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this room?");
+
+                    if (option == JOptionPane.YES_OPTION) {
+                        if (room instanceof TestRequestableRoom<?> requestableRoom) {
+                            var request = requestableRoom.getCurrentRequest();
+                            if (request != null) {
+                                request.setStatus(TestStatus.COMPLETED);
+                            }
+
+                            requestableRoom.setCurrentRequest(null);
+                        }
+
+                        AdminDataStorage.INSTANCE.getHospitalRooms().remove(room);
+
+                        AdminDataStorage.INSTANCE.save();
+                        DoctorDataStorage.INSTANCE.save();
+                    }
+                });
 
                 roomsPanel.add(roomPanel);
             }
