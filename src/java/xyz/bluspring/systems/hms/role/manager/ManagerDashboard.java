@@ -30,6 +30,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import xyz.bluspring.systems.hms.Main;
+import xyz.bluspring.systems.hms.data.AdminDataStorage;
+import xyz.bluspring.systems.hms.data.ManagerDataStorage;
 import xyz.bluspring.systems.hms.data.RoleManager;
 import xyz.bluspring.systems.hms.role.doctor.Doctor;
 import xyz.bluspring.systems.hms.utils.Utils;
@@ -160,11 +162,11 @@ public class ManagerDashboard extends JPanel {
         JPanel metricsCard = new JPanel(new GridLayout(5, 2, 10, 8));
         metricsCard.setBorder(BorderFactory.createTitledBorder("Hospital Operational & Financial Metrics"));
 
-        totalDeptsLabel = label("0");
-        totalShiftsLabel = label("0");
-        totalConsultationsLabel = label("0");
-        standardFeeLabel = label(Utils.formatCurrency(50.00));
-        estimatedRevenueLabel = label(Utils.formatCurrency(0.00));
+        totalDeptsLabel = label(Integer.toString(AdminDataStorage.INSTANCE.getHospitalRooms().size()));
+        totalShiftsLabel = label(Integer.toString(ManagerDataStorage.INSTANCE.readShifts().size()));
+        totalConsultationsLabel = label(Integer.toString(ManagerDataStorage.INSTANCE.getConsultationCount()));
+        standardFeeLabel = label(Utils.formatCurrency(AdminDataStorage.INSTANCE.getBaseConsultationRate()));
+        estimatedRevenueLabel = label(Utils.formatCurrency(AdminDataStorage.INSTANCE.getBaseConsultationRate() * ManagerDataStorage.INSTANCE.getConsultationCount()));
 
         metricsCard.add(label("Total Clinical Departments:"));
         metricsCard.add(totalDeptsLabel);
